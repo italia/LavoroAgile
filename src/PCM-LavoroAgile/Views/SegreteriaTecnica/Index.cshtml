@@ -1,0 +1,93 @@
+﻿@model SegreteriaTecnicaViewModel
+
+@{
+    ViewData["Title"] = "Lista Utenti";
+
+    List<SegreteriaTecnicaViewModel> utentiSegreteriaTecnica = (List<SegreteriaTecnicaViewModel>)ViewData["UtentiSegreteriaTecnica"];
+}
+
+<div class="row">
+    <div class="col px-lg-2">
+        <nav class="breadcrumb-container" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/Home">Home</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item active">
+                    <a href="#">Segreteria Tecnica - Gestione Utenti</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row border-bottom">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1 class="primary-color">Nuovo Utente</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Create" id="form">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-row mt-5">
+        <div class="form-group col-md-6">
+            <input type="text" class="form-control" id="NomeCompleto" asp-for="NomeCompleto">
+            <label for="NomeCompleto">Nome Completo</label>
+            <span asp-validation-for="NomeCompleto" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-5">
+            <input type="text" class="form-control" id="EmailUtente" asp-for="EmailUtente">
+            <label for="EmailUtente">Email Utente</label>
+            <span asp-validation-for="EmailUtente" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-1">
+            <button type="submit" class="btn btn-primary buttonWidth" onclick="return DisplaySpinner();">Salva</button>
+        </div>
+    </div>
+</form>
+
+<div class="row border-bottom">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1 class="primary-color">@ViewData["Title"]</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th hidden scope="col">ID</th>
+                <th scope="col" style="width:50%">Nome Completo</th>
+                <th scope="col" style="width:45%">Email</th>
+                <th scope="col" style="width:5%"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (utentiSegreteriaTecnica != null)
+            {
+                foreach (SegreteriaTecnicaViewModel segreteriaTecnicaUser in utentiSegreteriaTecnica)
+                {
+                    <tr>
+                        <td hidden>@segreteriaTecnicaUser.Id</td>
+                        <td>@segreteriaTecnicaUser.NomeCompleto</td>
+                        <td>@segreteriaTecnicaUser.EmailUtente</td>
+                        <td>
+                            <form asp-action="Delete" method="POST">
+                                <input type="text" id="id" name="id" asp-for="@segreteriaTecnicaUser.Id" hidden />
+                                <button type="submit" class="btn btn-primary buttonWidth">Elimina</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,63 @@
+{
+  "$id": "1",
+  "definitionId": "a5f300620e6a4468a48ab3c49853a604",
+  "versionId": "f117bcda3cf941519e5a38d002d8852c",
+  "displayName": "Recedi accordo",
+  "description": "Flusso per il passaggio in automatico dello stato degli accordi da \"Recesso pianificato\" a \"Recesso\"",
+  "version": 2,
+  "variables": {
+    "$id": "2",
+    "data": {}
+  },
+  "customAttributes": {
+    "$id": "3",
+    "data": {}
+  },
+  "isSingleton": false,
+  "persistenceBehavior": "WorkflowBurst",
+  "deleteCompletedInstances": false,
+  "isPublished": true,
+  "isLatest": true,
+  "activities": [
+    {
+      "$id": "4",
+      "activityId": "e810667c-8b33-42d4-bf26-db6fb164b95e",
+      "type": "VerifyRecessoActivity",
+      "displayName": "Verifica recesso",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "5",
+      "activityId": "5883a73a-0981-4f7f-8315-b1654e27b543",
+      "type": "Cron",
+      "displayName": "Ogni giorno a mezzanotte",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "6",
+          "name": "CronExpression",
+          "expressions": {
+            "$id": "7",
+            "Literal": "0 0 0 ? * * *"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    }
+  ],
+  "connections": [
+    {
+      "$id": "8",
+      "sourceActivityId": "5883a73a-0981-4f7f-8315-b1654e27b543",
+      "targetActivityId": "e810667c-8b33-42d4-bf26-db6fb164b95e",
+      "outcome": "Done"
+    }
+  ],
+  "id": "f117bcda3cf941519e5a38d002d8852c"
+}

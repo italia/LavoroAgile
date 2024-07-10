@@ -1,0 +1,211 @@
+﻿@model AccordoViewModel
+
+@{
+    ViewData["Title"] = "Gestione Accordi";
+}
+
+<div class="row">
+    <div class="col px-lg-2">
+        <nav class="breadcrumb-container" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/Home">Home</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item active">
+                    <a href="#">Accordi - Gest. Accordi</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row border-bottom">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1 class="primary-color">@ViewData["Title"]</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-controller="AmministrazioneAccordi" asp-action="Index" id="form" method="get">
+    <div class="form-row pt-3">
+        <div class="form-group col-md-11">
+            <input type="number" placeholder="Codice Accordo - Solo parte numerica" id="filter" name="filter" autocomplete="off" autofocus>
+            <label for="searchString"></label>
+        </div>
+        <div class="form-group col">
+            <button type="submit" class="btn btn-primary buttonWidth">Cerca</button>            
+        </div>
+    </div>
+</form>
+
+@if(Model.Id != Guid.Empty)
+{
+     <div class="row">
+        <div class="col">
+            <div class="card card-teaser">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <strong>Codice:</strong> <span class="@(Model.DataSottoscrizione.HasValue ? "text-primary" : "text-danger font-italic")" id="codice">@Model.DescriptiveCode</span>
+                        </div>
+                        <div class="col">
+                            <strong>Responsabile accordo:</strong> @Model.ResponsabileAccordo
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <strong>Proponente:</strong> <span id="proponente">@Model.Dipendente</span>
+                        </div>
+                        <div class="col">
+                            <strong>Capo intermedio:</strong> @Model.CapoIntermedio
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <strong>Data inizio:</strong> <span id="data-inizio">@Model.DataInizioUtc?.ToString("dd MMMM yyyy")</span>
+                        </div>
+                        <div class="col">
+                            <strong>Capo struttura:</strong> @Model.CapoStruttura
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <strong>Data fine:</strong> <span id="data-fine">@Model.DataFineUtc?.ToString("dd MMMM yyyy")</span>
+                        </div>
+                        @if(Model.isValutazionePositiva)
+                        {
+                            <div class="col">
+                                <strong>Valutazione:</strong> Positiva
+                            </div>
+                        }
+                        @if(!Model.isValutazionePositiva && Model.DataNotaDipendente != null && Model.DataNotaDirigente != null)
+                        {
+                            <div class="col">
+                                <strong>Valutazione:</strong> Negativa
+                            </div>       
+                        }
+                        @if(!Model.isValutazionePositiva && Model.DataNotaDipendente != null && Model.DataNotaDirigente == null)
+                        {
+                            <div class="col">
+                                <strong>Valutazione:</strong> In attesa di valutazione
+                            </div>   
+                        }
+                        @if ((Model.Stato == StatoAccordo.Sottoscritto || Model.Stato == StatoAccordo.Recesso || Model.Stato == StatoAccordo.AccordoConcluso) &&
+                                Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()) && 
+                            Model.DataNotaDipendente == null && 
+                            Model.DataFineUtc?.AddDays(-10) <= DateTime.UtcNow
+                            )
+                        {
+                            <div class="col">
+                                <strong>Valutazione:</strong> Valutazione da richiedere
+                            </div>
+                        }
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <strong>Stato invio informazioni Zucchetti - Ministero del Lavoro</strong>
+                        </div>
+                        <div class="col">
+                            @if (Model.Transmission != null)
+                            {
+                                <partial name="_StatoInvioPartial" model="Model.Transmission" />
+                                
+                            }
+                            @if (Model.Transmission == null)
+                            {
+                                <strong class="text-danger">Informazioni non disponibili</strong>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p class="text-uppercase font-italic primary-color-c9" id="stato" data-codice-stato="@Model.Stato">
+                                <span>@Model.Stato.ToDescriptionString() </span>
+                                @if (Model.InCorso && Model.Stato != StatoAccordo.RecessoPianificato && Model.Stato == StatoAccordo.Sottoscritto)
+                                {
+                                    <span class="text-success">
+                                        (In Corso dal @Model.DataInizioUtc?.Date.ToShortDateString() al @Model.DataFineUtc?.Date.ToShortDateString())
+                                    </span>
+                                }
+                                @if (Model.Stato == StatoAccordo.RecessoPianificato && Model.DataRecesso.HasValue)
+                                {
+                                    <span class="text-success">
+                                        (In Corso fino al @Model.DataRecesso.Value.Date.ToShortDateString())
+                                    </span>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="color:red">
+                            Attenzione le operazioni applicate all'accordo sono irreversibili, accertarsi prima di confermare!
+                            <br>
+                            Le operazioni consentite dipendono dallo stato in cui si trova l'accordo.
+                        </div>
+                    </div>
+                    <form asp-controller="AmministrazioneAccordi" asp-action="ConfermaOperazione" id="formConfermaOperazione" method="post">
+                        <div class="row" style="margin-top:20px">
+                            @Html.HiddenFor(a => a.Id)
+                            @Html.HiddenFor(a => a.Codice)
+                            <div class="col">                            
+                                <select class="form-control" style="border:thin black solid" name="operazione" onchange="$('#confirm').attr('disabled', this.value == 0)">
+                                    <option value="0">Selezionare un'operazione da effettuare per questo accordo</option>
+                                    <!--Le operazioni di eliminazione e riporto in "Bozza" non sono consentite in determinati stati-->
+                                    @if(Model.Stato == StatoAccordo.Sottoscritto ||
+                                        Model.Stato == StatoAccordo.InCorso ||
+                                        Model.Stato == StatoAccordo.AccordoConProposteModifica ||
+                                        Model.Stato == StatoAccordo.AccordoConcluso ||
+                                        Model.Stato == StatoAccordo.AccordoConclusoCambioStrutturaDipendente ||
+                                        Model.Stato == StatoAccordo.Recesso ||
+                                        Model.Stato == StatoAccordo.RecessoPianificato ||
+                                        Model.Stato == StatoAccordo.ChiusoPerRevisioneAccordo
+                                    )
+                                    {
+                                        <option value="@OperazioniAmmAccordo.EliminazioneValutazioniAccordo">Eliminazione valutazioni accordo</option>
+                                        <option value="@OperazioniAmmAccordo.EliminazioneValutazioneResponsabileAccordo">Eliminazione valutazione responsabile accordo</option>
+                                    }  
+                                    else
+                                    {
+                                        <option value="@OperazioniAmmAccordo.EliminazioneValutazioniAccordo">Eliminazione valutazioni accordo</option>
+                                        <option value="@OperazioniAmmAccordo.EliminazioneValutazioneResponsabileAccordo">Eliminazione valutazione responsabile accordo</option>
+                                        <option value="@OperazioniAmmAccordo.EliminazioneAccordo">Eliminazione Accordo</option>
+                                        <option value="@OperazioniAmmAccordo.RiportareInBozzaAccordo">Riportare in "Bozza" l'accordo</option>
+                                    }
+                                    <!-- Reinvio dati a Zucchetti solo se l'accordo è uno stato da sottoscritto in poi -->
+                                    @if (Model.Stato == StatoAccordo.AccordoConcluso ||
+                                    Model.Stato == StatoAccordo.AccordoConclusoCambioStrutturaDipendente ||
+                                    Model.Stato == StatoAccordo.ChiusoPerRevisioneAccordo ||
+                                    Model.Stato == StatoAccordo.InCorso ||
+                                    Model.Stato == StatoAccordo.Recesso ||
+                                    Model.Stato == StatoAccordo.RecessoPianificato ||
+                                    Model.Stato == StatoAccordo.Sottoscritto
+                                    )
+                                    {
+                                        <option value="@OperazioniAmmAccordo.ReinviareInformazioniAZucchetti">Reinviare informazioni a Zucchetti</option>
+                                    }
+                                    <!-- Cancellazione giornate da Zucchetti solo se sono presenti informazioni di trasmissione dell'accordo -->
+                                    @if (Model.Transmission != null)
+                                    {
+                                        <option value="@OperazioniAmmAccordo.CancellazioneGiornate">Cancellazione giornate da Zucchetti</option>
+
+                                    }
+                                    <!-- Ilreinvio della comunicazione al Ministero del Lavoro, è permesso solo per accordi sottoscritti ed in corso-->
+                                    @if(Model.Stato == StatoAccordo.Sottoscritto && Model.InCorso)
+                                    {
+                                        <option value="@OperazioniAmmAccordo.ReinvioComunicazioneMinisteroLavoro">Reinvio comunicazione Ministero del Lavoro</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary buttonWidth" id="confirm" disabled>Conferma</button>
+                            </div>                                                
+                        </div>                    
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}

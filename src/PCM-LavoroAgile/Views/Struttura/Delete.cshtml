@@ -1,0 +1,55 @@
+﻿@model StrutturaViewModel
+@{
+    ViewData["Title"] = "Elimina Struttura";
+}
+
+<div class="row">
+    <div class="col px-lg-2">
+        <nav class="breadcrumb-container" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/Home">Home</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/Struttura/Index">Lista Strutture</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item active">
+                    <a href="#">Struttura PCM - Elimina Struttura</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row border-bottom mb-5">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1 class="primary-color">@ViewData["Title"]</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Delete">
+    <div class="form-row">
+        <div class="form-group col" hidden>
+            <input type="text" class="form-control" id="id" readonly asp-for="Id">
+            <label for="id">Id</label>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col">
+            <h5>@Model.StrutturaCompleta</h5>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col">
+            <button type="submit" class="btn btn-primary buttonWidth" onclick="return DisplaySpinner();">Elimina</button>
+            @*<a href="/Servizio" class="btn btn-primary buttonWidth" role="button">Indietro</a>*@
+            <a href="javascript:void(0);" class="btn btn-primary buttonWidth" role="button" onclick="history.go(-1); return false;">Indietro</a>
+        </div>
+    </div>
+</form>

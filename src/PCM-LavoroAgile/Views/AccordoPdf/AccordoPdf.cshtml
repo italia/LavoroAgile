@@ -1,0 +1,1127 @@
+﻿@model AccordoForPdf
+
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+      xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+      xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+
+</head>
+
+<body>
+    
+    <partial name="AccordoPdf/_HeaderAccordoPdf" model="@Model"/>
+
+    <div class=WordSection1>
+        <p class=MsoNormal align=center style='text-align:center;'>
+            <b>
+                <span lang=IT style='font-size:16.0pt;font-family:"Times New Roman",serif'>
+                    ACCORDO DI LAVORO AGILE
+                </span>
+            </b>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal align=center style='text-align:center;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>TRA</span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal>
+            <b>
+                <u>
+                    <span lang=IT style='font-family:"Times New Roman",serif;font-variant:small-caps'>
+                        IL DIPENDENTE
+                    </span>
+                </u>
+            </b>
+        </p>
+
+        <br />
+
+        <table class=MsoTableGrid border=1 cellspacing=0 cellpadding=5 style='border-collapse:collapse;border:none;'>
+            <tr>
+                <td width=582 valign=top style='width:488.55pt;border:solid windowtext 1.0pt; padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal style='text-align:justify'>
+                        <span lang=IT style='font-family: "Times New Roman",serif'></span>
+                    </p>
+                    <p class=MsoNormal style='text-align:justify'>
+                        <span style='color:#0070C0'>@Model.Accordo.Dipendente.NomeCognome</span>
+                    </p>
+                    <p class=MsoNormal style='text-align:justify'>
+                        <span lang=IT style='font-family: "Times New Roman",serif'>
+                            nato/a a <span style='color:#0070C0'>@Model.Accordo.Dipendente.LuogoDiNascita</span>,
+                            il <span style='color:#0070C0'>@(Model.Accordo.Dipendente.DataDiNascita !=null?Model.Accordo.Dipendente.DataDiNascita.Value.ToString("dd/MM/yyyy"):"[n/a]")</span>,
+                            <br />
+                            codice fiscale <span style='color:#0070C0'>@Model.Accordo.Dipendente.CodiceFiscale</span>,
+                            <br />
+                            telefono <span style='color:#0070C0'>@Model.Accordo.Telefono</span>,
+                            mail <span style='color:#0070C0'>@Model.Accordo.Dipendente.Email</span>
+                        </span>
+                    </p>
+                    <p class=MsoNormal style='text-align:justify'>
+                        <span lang=IT style='font-family: "Times New Roman",serif'>in servizio presso</span>
+                    </p>
+                    @if (!String.IsNullOrEmpty(Model.Struttura.StrutturaLiv1))
+                    {
+                        <p class=MsoNormal style='text-align:justify'>
+                            <span lang=IT style='font-family: "Times New Roman",serif;color:#0070C0'>@Model.Struttura.StrutturaLiv1</span>
+                        </p>
+                    }
+                    @if (!String.IsNullOrEmpty(Model.Struttura.StrutturaLiv2))
+                    {
+                        <p class=MsoNormal style='text-align:justify'>
+                            <span lang=IT style='font-family: "Times New Roman",serif;color:#0070C0'>@Model.Struttura.StrutturaLiv2</span>
+                        </p>
+                    }
+                    @if (!String.IsNullOrEmpty(Model.Struttura.StrutturaLiv3))
+                    {
+                        <p class=MsoNormal style='text-align:justify'>
+                            <span lang=IT style='font-family: "Times New Roman",serif;color:#0070C0'>@Model.Struttura.StrutturaLiv3</span>
+                        </p>
+                    }
+                    <p class=MsoNormal style='text-align:justify'>
+                        <span lang=IT style='font-family: "Times New Roman",serif'>
+                            data di presa servizio
+                            <span style='color:#0070C0'>@(Model.Accordo.DataPresaServizio !=null?Model.Accordo.DataPresaServizio.Value.ToString("dd/MM/yyyy"):"[n/a]")</span>
+                        </span>
+                    </p>
+                </td>
+            </tr>
+        </table>
+
+        <br />
+
+        <p class=MsoNormal align=center style='text-align:center;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>E</span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal>
+            <b>
+                <u>
+                    <span lang=IT style='font-family:"Times New Roman",serif;font-variant:small-caps'>
+                        IL RESPONSABILE DELL'ACCORDO
+                    </span>
+                </u>
+            </b>
+        </p>
+
+        <br />
+
+        <table class=MsoTableGrid border=1 cellspacing=0 cellpadding=5 style='border-collapse:collapse;border:none;'>
+            <tr>
+                <td width=566 valign=top style='width:488.55pt;border:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal style='text-align:justify'>
+                        <span lang=IT style='font-family: "Times New Roman",serif'>
+                            <span style='color:#0070C0'>@Model.Accordo.ResponsabileAccordo</span>
+                        </span>
+                    </p>
+                    <p class=MsoNormal style='text-align:justify'>
+                        <span lang=IT style='font-family: "Times New Roman",serif'>
+                            mail <span style='color:#0070C0'>@Model.Accordo.ResponsabileAccordo.Email</span>
+                        </span>
+                    </p>
+                    <p class=MsoNormal style='text-align:justify;'>
+                        <span lang=IT style='font-family:"Times New Roman",serif'>
+                            dirigente del <br />
+                            @if (!String.IsNullOrEmpty(Model.Struttura.StrutturaLiv1))
+                            {
+                                <span style='color:#0070C0'>@Model.Struttura.StrutturaLiv1</span><br />
+                            }
+                            @if (!String.IsNullOrEmpty(Model.Struttura.StrutturaLiv2))
+                            {
+                                <span style='color:#0070C0'>@Model.Struttura.StrutturaLiv2</span><br />
+                            }
+                            @if (!String.IsNullOrEmpty(Model.Struttura.StrutturaLiv3))
+                            {
+                                <span style='color:#0070C0'>@Model.Struttura.StrutturaLiv3</span>
+                            }
+                        </span>
+                    </p>
+                </td>
+            </tr>
+        </table>
+
+        <br />
+
+        <p class=MsoNormal style='margin-bottom:10.0pt;line-height:115%'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                entrambi di seguito individuati come le "Parti",
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal align=center style='text-align:center;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                SI CONVIENE QUANTO SEGUE
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal align=center style='text-align:center;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>Art. 1</span>
+        </p>
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <i><span lang=IT style='font-family:"Times New Roman",serif'>(Oggetto)</span></i>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpFirst style='margin-left:14.2pt;text-align:justify;text-indent:-14.2pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif;'>
+                Il presente accordo di lavoro agile definisce le modalità con cui il dipendente svolge le attività e le
+                prestazioni lavorative in modalità agile, in conformità con quanto disposto dalla Direttiva sul lavoro
+                agile del Segretario Generale del 2 maggio 2019, del 20 dicembre 2021 e del 7 gennaio 2022
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal align=center style='text-align:center;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>Art. 2</span>
+        </p>
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <i><span lang=IT style='font-family:"Times New Roman",serif'>(Durata)</span></i>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpFirst style='margin-left:14.2pt;text-align:justify;text-indent:-14.2pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif;'>
+                <span>
+                    1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Il presente accordo di lavoro agile ha durata dal <span style='color:#0070C0'>@Model.Accordo.DataInizioUtc.ToString("dd/MM/yyyy")</span> al <span style='color:#0070C0'>@Model.Accordo.DataFineUtc.ToString("dd/MM/yyyy")</span>
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>Art. 3</span>
+        </p>
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    (Attività da svolgere in modalità agile)
+                </span>
+            </i>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpFirst style='margin-left:14.2pt;text-align:justify;text-indent:-18.0pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Il presente accordo di lavoro agile riguarda le seguenti attività:
+            </span>
+        </p>
+
+        @foreach (AttivitaAccordo attivita in Model.Accordo.ListaAttivita.OrderBy(a => a.Index))
+        {
+            <p class=MsoListParagraphCxSpMiddle style='text-align:justify;text-indent:-18.0pt'>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        @((attivita.Index+1) + "-ATT-" + attivita.Id)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span style='color:#0070C0'>@attivita.Attivita</span>
+                </span>
+            </p>
+        }
+
+        <br />
+
+        <p class=MsoListParagraphCxSpLast style='margin-left:14.2pt;text-align:justify;text-indent:-18.0pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    2.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                In aggiunta alle attività di cui al comma 1, nelle giornate di lavoro agile
+                potranno essere sempre effettuate attività di formazione in modalità e-learning,
+                preventivamente autorizzate e potranno essere assegnate dal responsabile dell’accordo ulteriori attività urgenti
+                e non programmabili con le modalità di cui all’articolo 5.<o:p></o:p>
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>Art. 4</span>
+        </p>
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    (Risultati attesi, indicatori e target)
+                </span>
+            </i>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraph style='margin-left:21.3pt;text-align:justify;text-indent:-18.0pt'>
+            <span lang=IT style='font-family:"Times New Roman",serif;'>
+                <span>
+                    1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                La realizzazione delle attività di cui all’articolo 3, verrà misurata attraverso i
+                seguenti risultati attesi, indicatori e target:
+            </span>
+        </p>
+
+        <br />
+
+        <table class="MsoTableGrid" border=1 cellspacing=0 cellpadding=5 style='margin-left:26.7pt;border-collapse:collapse;border:none'>
+            <tr>
+                <td colspan="1" valign=top style='border:solid windowtext 1.0pt; padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal align=center style='text-align:center'>
+                        <span lang=IT style='font-size:11.0pt;font-family:"Times New Roman",serif'></span>
+                    </p>
+                </td>
+                <td colspan="3" valign=top style='border:solid windowtext 1.0pt; padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal align=center style='text-align:center'>
+                        <span lang=IT style='font-size:11.0pt;font-family:"Times New Roman",serif'>RISULTATI ATTESI</span>
+                    </p>
+                </td>
+                <td colspan="3" valign=top style='border:solid windowtext 1.0pt;border-left:none; padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal align=center style='text-align:center'>
+                        <span lang=IT style='font-size:11.0pt;font-family:"Times New Roman",serif'>INDICATORI</span>
+                    </p>
+                </td>
+                <td colspan="3" valign=top style='border:solid windowtext 1.0pt; border-left:none;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal align=center style='text-align:center'>
+                        <span lang=IT style='font-size:11.0pt;font-family:"Times New Roman",serif'>TARGET</span>
+                    </p>
+                </td>
+            </tr>
+            @foreach (AttivitaAccordo attivita in Model.Accordo.ListaAttivita.OrderBy(a => a.Index))
+            {
+                <tr>
+                    <td colspan="1" valign=top style='border:solid windowtext 1.0pt; border-top:none; padding:0cm 5.4pt 0cm 5.4pt'>
+                        <p class=MsoNormal>
+                            <span lang=IT style='font-size:11.0pt; font-family:"Times New Roman",serif'>
+                                @((attivita.Index+1) + "-ATT-" + attivita.Id)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                            </span>
+                        </p>
+                    </td>
+                    <td colspan="3" valign=top style='border:solid windowtext 1.0pt; border-top:none; padding:0cm 5.4pt 0cm 5.4pt'>
+                        <p class=MsoNormal>
+                            <span lang=IT style='font-size:11.0pt; font-family:"Times New Roman",serif'>
+                                <span style='color:#0070C0'>@attivita.Risultati</span>
+                            </span>
+                        </p>
+                    </td>
+                    @if (attivita.TipologiaIndicatore.ToLower() != "percentuale")
+                    {
+                        <td colspan="3" valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; padding:0cm 5.4pt 0cm 5.4pt'>
+                            <p class=MsoNormal>
+                                <span lang=IT style='font-size:11.0pt; font-family:"Times New Roman",serif'>
+                                    <span style='color:#0070C0'>@attivita.DenominazioneIndicatore</span>
+                                </span>
+                            </p>
+                        </td>
+                    }
+                    else
+                    {
+                        <td  colspan="3" valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt; padding:0cm 5.4pt 0cm 5.4pt'>
+                            <p class=MsoNormal>
+                                <span lang=IT style='font-size:11.0pt; font-family:"Times New Roman",serif'>
+                                    <span style='color:#0070C0'>@attivita.DenominazioneIndicatore</span>
+                                </span>
+                                <br />
+                                <span lang=IT style='font-size:11.0pt; font-family:"Times New Roman",serif'>
+                                    <span style='color:#0070C0'>@attivita.PercentualeIndicatoreDenominazioneNumeratore / @attivita.PercentualeIndicatoreDenominazioneDenominatore</span>
+                                </span>
+                            </p>
+                        </td>
+                    }
+                    @if (attivita.TipologiaIndicatore.ToLower() == "testo")
+                    {
+                        <td colspan="3" valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                            <p class=MsoNormal>
+                                <span lang=IT style='font-size:11.0pt;font-family:"Times New Roman",serif;'>
+                                    <span style='color:#0070C0'>@attivita.OperatoreLogicoIndicatoreTesto</span><br />
+                                    <span style='color:#0070C0'>@attivita.TestoTarget</span>
+                                </span>
+                            </p>
+                        </td>
+                    }
+                    @if (attivita.TipologiaIndicatore.ToLower() == "numeroassoluto")
+                    {
+                        @if (attivita.OperatoreLogicoIndicatoreNumeroAssoluto.ToLower() != "compreso tra")
+                        {
+                            <td colspan="3" valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                                <p class=MsoNormal>
+                                    <span lang=IT style='font-size:11.0pt;font-family:"Times New Roman",serif;'>
+                                        <span style='color:#0070C0'>@attivita.OperatoreLogicoIndicatoreNumeroAssoluto</span><br />
+                                        <span style='color:#0070C0'>@attivita.NumeroAssolutoTarget</span>
+                                    </span>
+                                </p>
+                            </td>
+                        }
+                        else
+                        {
+                            <td colspan="3" valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                                <p class=MsoNormal>
+                                    <span lang=IT style='font-size:11.0pt;font-family:"Times New Roman",serif;'>
+                                        <span style='color:#0070C0'>@attivita.OperatoreLogicoIndicatoreNumeroAssoluto</span><br />
+                                        <span style='color:#0070C0'>@attivita.NumeroAssolutoDaTarget - @attivita.NumeroAssolutoATarget</span>
+                                    </span>
+                                </p>
+                            </td>
+                        }
+                    }
+                    @if (attivita.TipologiaIndicatore.ToLower() == "percentuale")
+                    {
+                        @if (attivita.OperatoreLogicoIndicatorePercentuale.ToLower() != "compreso tra")
+                        {
+                            <td colspan="3" valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                                <p class=MsoNormal>
+                                    <span lang=IT style='font-size:11.0pt;font-family:"Times New Roman",serif;'>
+                                        <span style='color:#0070C0'>@attivita.OperatoreLogicoIndicatorePercentuale</span><br />
+                                        <span style='color:#0070C0'>@attivita.PercentualeTarget</span>
+                                    </span>
+                                </p>
+                            </td>
+                        }
+                        else
+                        {
+                            <td colspan="3" valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                                <p class=MsoNormal>
+                                    <span lang=IT style='font-size:11.0pt;font-family:"Times New Roman",serif;'>
+                                        <span style='color:#0070C0'>@attivita.OperatoreLogicoIndicatorePercentuale</span><br />
+                                        <span style='color:#0070C0'>@attivita.PercentualeDaTarget - @attivita.PercentualeATarget</span>
+                                    </span>
+                                </p>
+                            </td>
+                        }
+                    }
+                    @if (attivita.TipologiaIndicatore.ToLower() == "data")
+                    {
+                        @if (attivita.OperatoreLogicoIndicatoreData.ToLower() != "compreso tra")
+                        {
+                            <td colspan="3" valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                                <p class=MsoNormal>
+                                    <span lang=IT style='font-size:11.0pt;font-family:"Times New Roman",serif;'>
+                                        <span style='color:#0070C0'>@attivita.OperatoreLogicoIndicatoreData</span><br />
+                                        <span style='color:#0070C0'>@(attivita.DataTarget != null? attivita.DataTarget.Value.ToString("dd/MM/yyyy"):"[n/a]")</span>
+                                    </span>
+                                </p>
+                            </td>
+                        }
+                        else
+                        {
+                            <td colspan="3" valign=top style='border-top:none;border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                                <p class=MsoNormal>
+                                    <span lang=IT style='font-size:11.0pt;font-family:"Times New Roman",serif;'>
+                                        <span style='color:#0070C0'>@attivita.OperatoreLogicoIndicatoreData</span><br />
+                                        <span style='color:#0070C0'>@(attivita.DataDaTarget != null? attivita.DataDaTarget.Value.ToString("dd/MM/yyyy"):"[n/a]") - @(attivita.DataATarget != null? attivita.DataATarget.Value.ToString("dd/MM/yyyy"):"[n/a]")</span>
+                                    </span>
+                                </p>
+                            </td>
+                        }
+                    }
+                </tr>
+            }
+
+        </table>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpFirst align=center style='margin-left:0cm;text-align:center'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>Art. 5</span>
+        </p>
+
+        <p class=MsoListParagraphCxSpMiddle align=center style='margin-left:0cm;text-align:center'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>(Modalità di esecuzione delle attività)</span>
+            </i>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='text-align:justify;text-indent:-18.0pt;'>
+            <span lang=IT style='font-size:12.5pt;font-family:"Times New Roman",serif;'>
+                <span>
+                    1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Le attività di cui all’articolo 3 sono svolte secondo le seguenti modalità:
+            </span>
+        </p>
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt;'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        a)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                La prestazione lavorativa è eseguita in modalità agile, al di fuori della sede di lavoro, per:
+            </span>
+        </p>
+        @if (Model.Accordo.Modalita.ToLower() == "ordinariaungiorno")
+        {
+            <p class=MsoListParagraphCxSpMiddle style='margin-left:93.3pt;text-align:justify;text-indent:-18.0pt;'>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    un giorno a settimana, il <span style='color:#0070C0'>@Model.Accordo.PianificazioneGiorniAccordo.ToString()</span>
+                </span>
+            </p>
+        }
+        @if (Model.Accordo.Modalita.ToLower() == "ordinariaduegiorni")
+        {
+            <p class=MsoListParagraphCxSpMiddle style='margin-left:93.3pt;text-align:justify;text-indent:-18.0pt;'>
+                <span lang=IT style='font-family:"Times New Roman",serif;'>
+                    <span>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    due giorni a settimana, il <span style='color:#0070C0'>@Model.Accordo.PianificazioneGiorniAccordo.Split(",")[0].ToString()</span> e il <span style='color:#0070C0'>@Model.Accordo.PianificazioneGiorniAccordo.Split(",")[1].ToString()</span>
+                </span>
+            </p>
+        }
+        @if (Model.Accordo.Modalita.ToLower() == "eccezionale" && Model.Accordo.DerogaPianificazioneDate == false)
+        {
+            <p class=MsoListParagraphCxSpMiddle style='margin-left:93.3pt;text-align:justify;text-indent:-18.0pt;'>
+                <span lang=IT style='font-family:"Times New Roman",serif;'>
+                    <span>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    nei giorni <br /><span style='color:#0070C0'>@Model.Accordo.PianificazioneDateAccordo</span>.
+                </span>
+            </p>
+        }
+        @if (Model.Accordo.Modalita.ToLower() == "eccezionale" && Model.Accordo.DerogaPianificazioneDate == true)
+        {
+            <p class=MsoListParagraphCxSpMiddle style='margin-left:93.3pt;text-align:justify;text-indent:-18.0pt;'>
+                <span lang=IT style='font-family:"Times New Roman",serif;'>
+                    <span>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    su espressa autorizzazione del Segretario generale per specifiche, rilevanti e documentate esigenze, e/o in presenza di una condizione di fragilità accertata nei giorni <br /><span style='color:#0070C0'>@Model.Accordo.PianificazioneDateAccordo</span>.
+                </span>
+            </p>
+        }
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.7pt;text-align:justify;text-indent:-18.0pt;'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        b)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Previo accordo con responsabile dell’accordo, in relazione alle priorità e scadenze
+                istituzionali, tenuto conto anche delle richieste urgenti e non preventivabili,
+                è consentita una modifica alla collocazione della giornata di lavoro agile
+                nella settimana, con un preavviso almeno di un giorno.<o:p></o:p>
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.7pt;text-align:justify;text-indent:-18.0pt;'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        c)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                L’attività in modalità agile sarà effettuata con strumentazione <span style='color:#0070C0'>@Model.Accordo.StrumentazioneUtilizzata.ToLower()</span>
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt;'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        d)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Al fine di garantire un’efficace interazione con l’ufficio di appartenenza ed un ottimale
+                svolgimento della prestazione lavorativa, è garantita la contattabilità
+                per n. <span style='color:#0070C0'>@Model.Accordo.FasceDiContattabilita.Split(',').Count()</span> ore, secondo le seguenti
+                fasce orarie
+                @foreach (string fasciaDiContattabilita in Model.Accordo.FasceDiContattabilita.Split(','))
+                {
+                    <span style='color:#0070C0'>@fasciaDiContattabilita,</span>
+                }
+                durante le quali deve essere garantita la piena e tempestiva operatività.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt;'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        e)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Al fine di assicurare il rispetto dei tempi di riposo, nonché il “diritto alla disconnessione”
+                dalle strumentazioni tecnologiche, è garantita una fascia di inoperabilità o disconnessione per un periodo
+                di 11 ore di riposo consecutivo durante la quale non può essere erogata alcuna prestazione lavorativa.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        f)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Le attività da svolgere verranno, di norma, assegnate entro il giorno precedente,
+                salve richieste urgenti e non preventivabili.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        g)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Nel caso di urgenze e nel rispetto delle fasce di contattabilità,
+                potranno essere assegnate pratiche da esaminare e approfondimenti da realizzare,
+                nel giorno stesso di lavoro in modalità agile. In tal caso, il lavoratore si impegna a garantire
+                una risposta tempestiva e completa, tenendo conto del livello di complessità
+                della questione da affrontare e del tempo a diposizione per l’approfondimento.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt;'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        h)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Se il dipendente è in possesso di un cellulare di servizio, per i servizi che lo richiedono,
+                può essere prevista la possibilità di inoltrare le chiamate dall’interno telefonico del proprio
+                ufficio sul cellulare di servizio.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt;'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        i)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                In caso di problematiche di natura tecnica e/o informatica, e comunque in ogni caso di
+                cattivo funzionamento dei sistemi informatici, qualora lo svolgimento dell’attività
+                lavorativa a distanza sia impedito o sensibilmente rallentato,
+                il dipendente deve darne tempestiva comunicazione al proprio dirigente che,
+                qualora le problematiche dovessero rendere temporaneamente impossibile o non sicura la prestazione lavorativa,
+                può richiamare il dipendente a lavorare in presenza.
+                In tal caso, il dipendente è tenuto a completare la propria prestazione lavorativa fino al termine
+                dell’orario ordinario di lavoro.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt;'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        j)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Per sopravvenute esigenze di servizio, il dipendente in lavoro agile può essere richiamato a lavorare
+                in presenza, con comunicazione che deve pervenire in tempo utile per la ripresa del servizio e,
+                comunque, almeno il giorno prima. Il rientro in servizio non comporta il diritto al recupero delle
+                giornate di lavoro agile non fruite.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt;'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        k)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Le attività realizzate nella giornata di lavoro agile sono rendicontate settimanalmente al responsabile
+                dell’accordo.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt;'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        l)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Alla scadenza dell’accordo, il dipendente compila la scheda di monitoraggio conclusiva e la trasmette
+                al dirigente responsabile che valuta gli esiti delle attività svolte.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt;'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        m)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Il presente accordo potrà essere prorogato, alle stesse condizioni, previa intesa tra le Parti, 
+                per un periodo comunque non superiore a sei mesi.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt;'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    <span>
+                        n)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                    </span>
+                </span>
+            </i>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                La proroga e il rinnovo dell’accordo sono subordinati a una valutazione positiva degli
+                esiti delle attività.<o:p></o:p>
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpLast style='margin-left:18.75pt;text-align:justify'>
+            <span lang=IT style='font-family:"Times New Roman",serif;background:yellow;'></span>
+        </p>
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>Art. 6</span>
+        </p>
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    (Modifica dell’accordo)
+                </span>
+            </i>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpFirst style='margin-left:18.75pt;text-align:justify;text-indent:-18.0pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif;'>
+                <span>
+                    1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Per sopravvenute esigenze, il dipendente e il dirigente responsabile possono concordare eventuali
+                modifiche all’accordo.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>Art. 7</span>
+        </p>
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    (Recesso dall’accordo)
+                </span>
+            </i>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpFirst style='margin-left:14.2pt;text-align:justify;text-indent:-18.0pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Ciascuna delle Parti durante il periodo di vigenza dell’accordo può, con adeguato
+                preavviso, pari ad almeno trenta giorni lavorativi e fornendo specifica
+                motivazione, recedere, anche unilateralmente, dall’accordo stesso prima della
+                sua naturale scadenza.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpFirst style='margin-left:14.2pt;text-align:justify;text-indent:-18.0pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    2.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                In presenza di un giustificato motivo, ciascuna delle Parti può recedere dall’accordo anche senza preavviso.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpFirst style='margin-left:14.2pt;text-align:justify;text-indent:-18.0pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    3.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Il mancato raggiungimento degli obiettivi programmati, il sopravvenire di nuove esigenze organizzative, il cambio struttura, il cambio responsabile accordo,
+                @Model.Accordo.GiustificatoMotivoDiRecesso 
+                costituiscono giustificato motivo di recesso.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>Art. 8</span>
+        </p>
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    (Trattamento giuridico ed economico)
+                </span>
+            </i>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpFirst style='margin-left:14.2pt;text-align:justify;text-indent:-14.2pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Le giornate di lavoro agile non comportano penalizzazioni ai fini del riconoscimento
+                di professionalità e della progressione di carriera. Lo svolgimento della
+                prestazione lavorativa con modalità agile non incide sulla natura giuridica del
+                rapporto di lavoro subordinato in atto, regolato dalle norme legislative,
+                contrattuali e dalle condizioni dei contratti collettivi nazionali e
+                integrativi relativi al personale della Presidenza del Consiglio dei ministri
+                vigenti, né sul trattamento economico in godimento, salvo quanto previsto al
+                comma 2.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:14.2pt;text-align:justify;text-indent:-14.2pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    2.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Per effetto della distribuzione flessibile del tempo di lavoro, nelle giornate di
+                lavoro agile non è riconosciuto il trattamento di trasferta e non sono
+                configurabili protrazioni dell’orario di lavoro aggiuntive (previste tra
+                l’altro ai sensi dell’articolo 18 del CCNL relativo al personale del comparto
+                della Presidenza del Consiglio dei ministri, quadriennio normativo 2006 – 2009)
+                e prestazioni straordinarie, né permessi brevi ed altri istituti che comportino
+                riduzioni di orario.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpLast style='margin-left:14.2pt; text-align:justify;text-indent:-14.2pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    3.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Nelle giornate di attività svolte in lavoro agile al dipendente è riconosciuto il diritto al buono pasto.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>Art. 9</span>
+        </p>
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    (Obblighi di custodia, riservatezza e sicurezza informatica)
+                </span>
+            </i>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpFirst style='margin-left:14.2pt;text-align:justify;text-indent:-14.2pt'>
+            <![if !supportLists]><span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Il dipendente è tenuto a custodire con diligenza la documentazione utilizzata, i
+                dati e gli strumenti tecnologici messi a disposizione dall’amministrazione.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:14.2pt;text-align:justify;text-indent:-14.2pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    2.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Nell’esecuzione della prestazione lavorativa in modalità agile, il dipendente è tenuto al
+                rispetto degli obblighi di riservatezza, ai sensi del decreto del Presidente
+                della Repubblica 16 aprile 2013, n. 62, “Regolamento recante codice di
+                comportamento dei dipendenti pubblici” e del decreto del Presidente del
+                Consiglio dei ministri 16 settembre 2014, “Codice di comportamento e di tutela
+                della dignità e dell’etica dei dirigenti e dei dipendenti della Presidenza del
+                Consiglio dei ministri”.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:14.2pt;text-align:justify;text-indent:-14.2pt'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    3.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                L’utilizzo della strumentazione informatica comunque utilizzata dal dipendente durante
+                l’esecuzione della prestazione lavorativa in modalità agile, deve avvenire nel
+                rigoroso rispetto delle linee guida, delle istruzioni e dell’informativa per
+                l’utilizzo tramite accesso da remoto dei servizi alla rete PCM (Allegato A). La
+                strumentazione informatica eventualmente assegnata dall’amministrazione dovrà
+                essere utilizzata esclusivamente per gli scopi per i quali è data in uso al
+                dipendente.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>Art. 10</span>
+        </p>
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    (Sicurezza sul lavoro)
+                </span>
+            </i>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpFirst style='margin-left:14.2pt;text-align:justify;text-indent:-14.2pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                L’amministrazione garantisce la salute e la sicurezza dipendente in coerenza con l’esercizio
+                dell’attività di lavoro in modalità agile.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpMiddle style='margin-left:14.2pt; text-align:justify;text-indent:-14.2pt;'>
+            <span lang=IT style='font-family:"Times New Roman",serif;'>
+                <span>
+                    2.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Il dipendente prende visione e accetta l’informativa scritta
+                consegnata dall’amministrazione sui rischi generali e specifici connessi alla particolare
+                modalità di esecuzione della prestazione lavorativa (Allegato B) e resa disponibile sul sito intranet della PCM nella
+                sezione “Lavoro agile”, impegnandosi ad operare una scelta consapevole del
+                luogo in cui espletare l’attività lavorativa.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraphCxSpLast style='margin-left:14.2pt;text-align:justify;text-indent:-14.2pt'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    3.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Il dipendente collabora proficuamente e diligentemente con l’amministrazione al
+                fine di garantire un adempimento sicuro e corretto della prestazione di lavoro.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal align=center style='text-align:center;'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>Art. 11</span>
+        </p>
+
+        <p class=MsoNormal align=center style='text-align:center'>
+            <i>
+                <span lang=IT style='font-family:"Times New Roman",serif'>
+                    (Autorizzazione al trattamento dei dati personali)
+                </span>
+            </i>
+        </p>
+
+        <br />
+
+        <p class=MsoListParagraph style='margin-left:14.2pt; text-align:justify;text-indent:-14.2pt'>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                <span>
+                    1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp; </span>
+                </span>
+            </span>
+            <span lang=IT style='font-family:"Times New Roman",serif'>
+                Il dipendente, letta l’informativa sul trattamento dei dati personali
+                (Allegato C) resa disponibile nella sezione “Lavoro agile” del sito
+                intranet della Presidenza del Consiglio dei ministri, autorizza al trattamento
+                dei propri dati personali ai sensi del decreto legislativo 30 giugno 2003, n. 196,
+                come modificato dal decreto legislativo 10 agosto 2018, n. 101 e del Regolamento
+                UE 2016/679 per le finalità connesse e strumentali alla gestione del presente
+                accordo.
+            </span>
+        </p>
+
+        <br />
+
+        <p class=MsoNormal style='text-align:justify'>
+            Roma, li <span style='color:#0070C0'>@(Model.Accordo.DataSottoscrizione !=null?Model.Accordo.DataSottoscrizione.Value.ToString("dd/MM/yyyy"):"[n/a]")</span>
+        </p>
+
+        <br />
+
+        <table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none'>
+            <tr>
+                <td width=286 valign=top style='width:244.25pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal align=center style='text-align:center'>
+                        <span lang=IT style='font-family:"Times New Roman",serif'>IL DIPENDENTE</span>
+                    </p>
+                    <br />
+                    <p class=MsoNormal align=center style='text-align:center'>
+                        <span lang=IT style='font-family:"Times New Roman",serif'>F.to   @(Model.Accordo.Dipendente.NomeCognome)</span>
+                    </p>
+                </td>
+                <td width=286 valign=top style='width:244.3pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoNormal align=center style='text-align:center'>
+                        <span lang=IT style='font-family:"Times New Roman",serif'>IL RESPONSABILE DELL’ACCORDO</span>
+                    </p>
+                    <br />
+                    <p class=MsoNormal align=center style='text-align:center'>
+                        <span lang=IT style='font-family:"Times New Roman",serif'>F.to   @(Model.Accordo.ResponsabileAccordo)</span>
+                    </p>
+                </td>
+            </tr>
+        </table>
+
+        <br /><br />
+
+    </div>
+    
+</body>
+
+</html>

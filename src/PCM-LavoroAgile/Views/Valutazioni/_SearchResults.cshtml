@@ -1,0 +1,55 @@
+﻿@model SearchResultCollectionViewModel
+
+<input type="hidden" id="total-search-elements" value="@Model.TotalElements" />
+@foreach (var result in Model.SearchResults)
+{
+    <div class="row">
+        <div class="col">
+            <div class="card card-teaser">
+                <div class="card-body">
+                    <div class="category-top">
+                        <svg class="icon">
+                            <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-file"></use>
+                        </svg>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <strong>Codice:</strong> <span class="@(result.DataSottoscrizione.HasValue ? "text-primary" : "text-danger font-italic")">@result.DescriptiveCode</span>
+                        </div>
+                        <div class="col">
+                            <strong>Responsabile accordo:</strong> @result.ResponsabileAccordo
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <strong>Proponente:</strong> @result.NomeCognome
+                        </div>
+                        <div class="col">
+                            <strong>Capo intermedio:</strong> @result.CapoIntermedio
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <strong>Data inizio:</strong> @result.DataInizioUtc.ToString("dd MMMM yyyy")<br />
+                            <strong>Data fine:</strong> @result.DataFineUtc.ToString("dd MMMM yyyy")
+                        </div>
+                        <div class="col">
+                            <strong>Capo struttura:</strong> @result.CapoStruttura
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col">
+                            <p class="text-uppercase font-italic primary-color-c9">@result.Stato.ToDescriptionString()</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <a class="text-danger font-weight-bold" href="@Url.Action("Valutation", "Valutazioni", new { id = @result.Id, role = Model.Role })">Valuta Accordo</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

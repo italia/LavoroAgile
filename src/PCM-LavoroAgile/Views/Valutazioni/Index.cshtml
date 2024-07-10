@@ -1,0 +1,84 @@
+﻿@model SearchViewModel
+
+<div class="row">
+    <div class="col px-lg-2">
+        <nav class="breadcrumb-container" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/Home">Home</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item active">
+                    <a href="#">Risultato della ricerca</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1 class="primary-color">Lista degli accordi da Valutare</h1>
+            </div>
+        </div>
+        <div class="d-block d-lg-none d-xl-none">
+            <div class="row pb-3">
+                <div class="col-6">
+                    <small class="total-results">Ricerca in corso...</small>
+                </div>
+                <div class="col-6">
+                    <div class="float-right">
+                        <a href="#categoryCollapse"
+                           role="button"
+                           class="font-weight-bold text-uppercase"
+                           data-toggle="collapse"
+                           aria-expanded="false"
+                           aria-controls="categoryCollapse">
+                            Filtri
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row border-top">
+    <partial name="_SearchFilters" model="Model" />
+    <section class="col-lg-9 py-lg-5">
+        <div class="d-none d-lg-block d-xl-block">
+            <div class="row pb-3 px-4 border-bottom">
+                <div class="col-6">
+                    <small class="total-results">Ricerca in corso...</small>
+                </div>
+            </div>
+        </div>
+        <p id="no-results" class="hide"><em>Nessun elemento individuato.</em></p>
+        <!-- Risultati ricerca. -->
+        <!-- Caricamento risultati -->
+        <div id="loading" class="progress progress-indeterminate">
+            <span class="sr-only">In caricamento...</span>
+            <div class="progress-bar" role="progressbar"></div>
+        </div>
+    </section>
+</div>
+@section Scripts {
+    <script src="~/lib/jquery-inview/dist/jquery.inview.min.js"></script>
+    <script src="~/js/search-manager.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var pageSize = @Model.PageSize;
+            var searchUrl = '@Url.Action("GetSearchResultPage", "Valutazioni")';
+            var role = getQueryParam('role');
+
+            
+            // Registrazione del view handler per la gestione della paginazione.
+            registerInViewHandler(role, pageSize, '#loading', '.total-results', '#no-results', searchUrl, '#total-search-elements');
+
+            // Inizializzazione dei filtri.
+            initFilters();
+        });
+
+    </script>
+}

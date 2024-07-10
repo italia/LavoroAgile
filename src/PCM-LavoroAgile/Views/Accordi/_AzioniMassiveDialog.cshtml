@@ -1,0 +1,53 @@
+﻿<div class="modal" tabindex="-1" role="dialog" id="azioni-massive">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Azioni massive</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Chiudi">
+                    <svg class="icon">
+                        <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-close"></use>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group pre-scrollable">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Codice</th>
+                                <th scope="col">Proponente</th>
+                                <th scope="col">Data inizio - Data fine</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accordi-selezionati">
+                            <tr>
+                                <th scope="row">LA-01</th>
+                                <td>Mario Rossi</td>
+                                <td>12/12/2021</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <div class="form-group">
+                        <textarea id="note" name="Note" rows="3" placeholder="Digita qui eventuali note"></textarea>
+                        <label for="note">Note</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @if (Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()))
+                {
+                    <button class="btn btn-sm btn-success buttonWidth" id="sottoscrivi-input" hidden>Sottoscrivi</button>
+                }
+                @if (Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()) || Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_INTERMEDIO.ToDescriptionString()) || Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_STRUTTURA.ToDescriptionString()))
+                {
+                    <button id="approva-input" class="btn btn-sm btn-success buttonWidth" hidden>Approva e Sottoscrivi</button>
+                    <button id="rifiuta-input" class="btn btn-sm btn-danger buttonWidth" hidden>Rifiuta</button>
+                    <button id="modifica-input" class="btn btn-sm btn-info buttonWidth" hidden>Richiedi modifica</button>
+                }
+                <button class="btn btn-primary btn-sm" type="button" data-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>

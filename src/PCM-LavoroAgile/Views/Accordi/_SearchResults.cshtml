@@ -1,0 +1,140 @@
+﻿@using PCM_LavoroAgile.Extensions;
+@model SearchResultCollectionViewModel
+
+<input type="hidden" id="total-search-elements" value="@Model.TotalElements" />
+@foreach (var result in Model.SearchResults)
+{
+    <div class="row">
+        <div class="col">
+            <div class="card card-teaser">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Colonna di selezione multipla mostrata solo se utente è dirigente -->
+                        @if (Model.Role.Equals(RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()) || Model.Role.Equals(RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_INTERMEDIO.ToDescriptionString()) || Model.Role.Equals(RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_STRUTTURA.ToDescriptionString()))
+                        {
+                            <div class="col-1">
+                                <div class="form-check">
+                                    <input id="@result.Id" type="checkbox" data-isresponsabileaccordo="@result.IdResponsabileAccordo.Equals(User.GetUserId())">
+                                    <label for="@result.Id"></label>
+                                </div>
+                            </div>
+                        }
+                    <div class="col auto">
+                        <input type="hidden" id="is-rinnovo-input" value="@result.IsRinnovo" />
+                        <input type="hidden" id="rinnovabile-input" value="@result.Rinnovabile" />
+
+                        <div class="category-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-file"></use>
+                            </svg>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <strong>Codice:</strong> <span class="@(result.DataSottoscrizione.HasValue ? "text-primary" : "text-danger font-italic")" id="codice">@result.DescriptiveCode</span>
+                            </div>
+                            <div class="col">
+                                <strong>Responsabile accordo:</strong> @result.ResponsabileAccordo
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <strong>Proponente:</strong> <span id="proponente">@result.NomeCognome</span>
+                            </div>
+                            <div class="col">
+                                <strong>Capo intermedio:</strong> @result.CapoIntermedio
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <strong>Data inizio:</strong> <span id="data-inizio">@result.DataInizioUtc.ToString("dd MMMM yyyy")</span>
+                            </div>
+                            <div class="col">
+                                <strong>Capo struttura:</strong> @result.CapoStruttura
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <strong>Data fine:</strong> <span id="data-fine">@result.DataFineUtc.ToString("dd MMMM yyyy")</span>
+                            </div>
+                            @if(result.isValutazionePositiva)
+                            {
+                                <div class="col">
+                                    <strong>Valutazione:</strong> Positiva
+                                </div>
+                            }
+                            @if(!result.isValutazionePositiva && result.DataNotaDipendente != null && result.DataNotaDirigente != null)
+                            {
+                                <div class="col">
+                                    <strong>Valutazione:</strong> Negativa
+                                </div>       
+                            }
+                            @if(!result.isValutazionePositiva && result.DataNotaDipendente != null && result.DataNotaDirigente == null)
+                            {
+                                <div class="col">
+                                    <strong>Valutazione:</strong> In attesa di valutazione
+                                </div>   
+                            }
+                            @if ((result.Stato == StatoAccordo.Sottoscritto || result.Stato == StatoAccordo.Recesso || result.Stato == StatoAccordo.AccordoConcluso) &&
+                                 Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()) && 
+                                result.DataNotaDipendente == null && 
+                                result.DataFineUtc.AddDays(-10) <= DateTime.UtcNow
+                                )
+                            {
+                                <div class="col">
+                                    <strong>Valutazione:</strong> Valutazione da richiedere
+                                </div>
+                            }
+                            </div>
+                         @if (result.Stato == StatoAccordo.Bozza ||
+                                result.Stato == StatoAccordo.Sottoscritto ||
+                                result.Stato == StatoAccordo.DaApprovareRA ||
+                                result.Stato == StatoAccordo.DaApprovareCI ||
+                                result.Stato == StatoAccordo.DaApprovareCS ||
+                                result.Stato == StatoAccordo.DaSottoscrivereP ||
+                                result.Stato == StatoAccordo.DaSottoscrivereRA)
+                            {
+                                <div class="row">
+                                    <div class="col">
+                                        <a class="text-decoration-none font-weight-bold" target="_blank" href="@Url.Action("GeneratePdf", "Accordi", new { id = @result.Id })"><i>Download accordo</i></a>
+                                    </div>
+                                </div>
+                            }
+                            <div class="row">
+                            <div class="col">
+
+                                <p class="text-uppercase font-italic primary-color-c9" id="stato" data-codice-stato="@result.Stato">
+                                    <span>@result.Stato.ToDescriptionString() </span>
+                                    @if (result.InCorso && result.Stato != StatoAccordo.RecessoPianificato && result.Stato == StatoAccordo.Sottoscritto)
+                                    {
+                                        <span class="text-success">
+                                            (In Corso dal @result.DataInizioUtc.Date.ToShortDateString() al @result.DataFineUtc.Date.ToShortDateString())
+                                        </span>
+                                    }
+                                    @if (result.Stato == StatoAccordo.RecessoPianificato && result.DataRecesso.HasValue)
+                                    {
+                                        <span class="text-success">
+                                            (In Corso fino al @result.DataRecesso.Value.Date.ToShortDateString())
+                                        </span>
+                                    }
+                                </p>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <a class="text-decoration-none font-weight-bold" href="@Url.Action("Details", "Accordi", new { id = @result.Id, role = Model.Role })">Vai al dettaglio</a>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}

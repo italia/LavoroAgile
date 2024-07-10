@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"] PCM_LavoroAgile</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap-italia/dist/css/bootstrap-italia.min.css" />
+    <link href="~/css/jquery-ui.css" rel="stylesheet" />
+    <link href="~/css/jquery-ui.multidatespicker.css" rel="stylesheet" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <!--SPINNER-->
+    <div class="submit-spinner hidden-spinner">
+        <div class="progress-spinner progress-spinner-active">
+            <span class="sr-only">Caricamento...</span>
+        </div>
+    </div>
+
+    <!--Header template https://designers.italia.it/-->
+    <partial name="_Header" />
+
+    <!--Corpo-->
+    <div class="container" style="min-height:500px">
+        @RenderBody()
+    </div>
+
+    <a href="#" aria-hidden="true" data-attribute="back-to-top" class="back-to-top" id="example">
+        <svg class="icon icon-light"><use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-arrow-up"></use></svg>
+    </a>
+
+    <!--Footer - Non si utilizza quello del template questo è stato personalizzato per farlo rimanere sempre a piè pagina-->
+    <partial name="_Footer.cshtml">
+
+        @*Variabile utile a caricare i font per boostratp-italia, se non usata vegono cercati in una cartella "bootstrap-italia/dist/fonts" come da documentazione*@
+        @*Si è preferito scaricare i google-font utili e referenziarli in locale dal css*@
+        <script>window.__PUBLIC_PATH__ = '/lib/bootstrap-italia/dist/fonts';</script>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap-italia/dist/js/bootstrap-italia.bundle.min.js"></script>
+        <script src="~/js/jquery-ui.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        <script src="~/js/jquery-ui.multidatespicker.js"></script>
+        <script src="~/js/datepicker-it.js"></script>
+        <script src="~/js/Utility.js" asp-append-version="true"></script>
+        <script src="~/js/jquery.mark.min.js"></script>
+
+        @RenderSection("Scripts", required: false)
+
+        @* Gestore delle notifiche. *@
+        <partial name="_Notification.cshtml" />
+
+</body>
+</html>

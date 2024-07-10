@@ -1,0 +1,125 @@
+﻿@model SearchViewModel
+<aside class="col-lg-3 py-lg-5">
+    <div class="collapse d-lg-block d-xl-block" id="categoryCollapse">
+        <div class="mt-4">
+            <input type="button" class="btn btn-primary" value="Aggiorna risultati" onclick="refineSearch()" />
+        </div>
+        <div class="pt-2 pt-lg-5">
+            <h6 class="text-uppercase">Codice accordo</h6>
+            <div class="mt-4">
+                <input id="codice" type="text" placeholder="Codice accordo" autocomplete="off" asp-for="Codice" />
+            </div>
+        </div>
+        <div class="pt-2 pt-lg-5">
+            <h6 class="text-uppercase">Proponente</h6>
+            <div class="mt-4">
+                <input id="proponente" type="text" placeholder="Proponente" autocomplete="off" asp-for="Proponente" />
+            </div>
+        </div>
+        <div class="pt-2 pt-lg-5">
+            <h6 class="text-uppercase">Data inizio</h6>
+            <div class="mt-4">
+                <div class="bootstrap-select-wrapper">
+                    <select id="singola-intervallo" asp-for="SingolaIntervallo">
+                        <option value="fra">In intervallo</option>
+                        <option value="da">A partire da</option>
+                        <option value="a">Fino a</option>
+                    </select>
+                </div>
+                <div class="it-datepicker-wrapper">
+                    <input class="form-control it-date-datepicker" id="dataDa" type="text" placeholder="Da" autocomplete="off" asp-for="DataDa">
+                    <input class="form-control it-date-datepicker" id="dataA" type="text" placeholder="A" autocomplete="off" asp-for="DataA">
+                </div>
+                <div id="invalidDates" class="invalid-feedback">Controllare intervallo date.</div>
+            </div>
+        </div>
+        <div class="pt-2 pt-lg-5">
+            <h6 class="text-uppercase">Stato</h6>
+            <div id="filtro-stati" class="form-check mt-4" onchange="updateStatiSelection(this);">
+                <div>
+                    <input name="filtroStato" id="InAttesaValutazioneSegreteriaTecnica" value="@((int)StatoAccordo.InAttesaValutazioneSegreteriaTecnica)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.InAttesaValutazioneSegreteriaTecnica).Count() > 0 ? "checked" : "") />
+                    <label for="InAttesaValutazioneSegreteriaTecnica" style="font-size:0.8em;">In attesa di valutazione - Segr. Tecnica</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="bozza" value="@((int)StatoAccordo.Bozza)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.Bozza).Count() > 0 ? "checked" : "") />
+                    <label for="bozza" style="font-size:0.8em;">Bozza</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="da-approvare-dr" value="@((int)StatoAccordo.DaApprovareRA)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.DaApprovareRA).Count() > 0 ? "checked" : "") />
+                    <label for="da-approvare-dr" style="font-size:0.8em;">Da Approvare - Responsabile</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="richiesta-modifica-ra" value="@((int)StatoAccordo.RichiestaModificaRA)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.RichiestaModificaRA).Count() > 0 ? "checked" : "") />
+                    <label for="richiesta-modifica-ra" style="font-size:0.8em;">Richiesta Modifica - Responsabile</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="rifiutata-ra" value="@((int)StatoAccordo.RifiutataRA)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.RifiutataRA).Count() > 0 ? "checked" : "")/>
+                    <label for="rifiutata-ra" style="font-size:0.8em;">Rifiutata - Responsabile</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="da-approvare-ci" value="@((int)StatoAccordo.DaApprovareCI)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.DaApprovareCI).Count() > 0 ? "checked" : "") />
+                    <label for="da-approvare-ci" style="font-size:0.8em;">Da Approvare - Capo Intermedio</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="richiesta-modifica-ci" value="@((int)StatoAccordo.RichiestaModificaCI)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.RichiestaModificaCI).Count() > 0 ? "checked" : "") />
+                    <label for="richiesta-modifica-ci" style="font-size:0.8em;">Richiesta Modifica - Capo Intermedio</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="rifiutata-ci" value="@((int)StatoAccordo.RifiutataCI)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.RifiutataCI).Count() > 0 ? "checked" : "") />
+                    <label for="rifiutata-ci" style="font-size:0.8em;">Rifiutata - Capo Intermedio</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="da-approvare-cs" value="@((int)StatoAccordo.DaApprovareCS)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.DaApprovareCS).Count() > 0? "checked" : "") />
+                    <label for="da-approvare-cs" style="font-size:0.8em;">Da Approvare - Capo Struttura</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="richiesta-modifica-cs" value="@((int)StatoAccordo.RichiestaModificaCS)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.RichiestaModificaCS).Count() > 0 ? "checked" : "") />
+                    <label for="richiesta-modifica-cs" style="font-size:0.8em;">Richiesta Modifica - Capo Struttura</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="rifiutata-cs" value="@((int)StatoAccordo.RifiutataCS)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.RifiutataCS).Count() > 0 ? "checked" : "") />
+                    <label for="rifiutata-cs" style="font-size:0.8em;">Rifiutata - Capo Struttura</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="da-sottoscrivere-ra" value="@((int)StatoAccordo.DaSottoscrivereRA)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.DaSottoscrivereRA).Count() > 0 ? "checked" : "") />
+                    <label for="da-sottoscrivere-ra" style="font-size:0.8em;">Da Sottoscrivere - Responsabile</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="da-sottoscrivere-p" value="@((int)StatoAccordo.DaSottoscrivereP)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.DaSottoscrivereP).Count() > 0 ? "checked" : "") />
+                    <label for="da-sottoscrivere-p" style="font-size:0.8em;">Da Sottoscrivere - Proponente</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="sottoscritto" value="@((int)StatoAccordo.Sottoscritto)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.Sottoscritto).Count() > 0 ? "checked" : "") />
+                    <label for="sottoscritto" style="font-size:0.8em;">Sottoscritto</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="recesso" value="@((int)StatoAccordo.Recesso)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.Recesso).Count() > 0 ? "checked" : "") />
+                    <label for="recesso" style="font-size:0.8em;">Recesso</label>
+                </div>
+                <div>
+                    <input name="filtroStato" id="chiusoPerRevisioneAccordo" value="@((int)StatoAccordo.ChiusoPerRevisioneAccordo)" type="checkbox" @(Model.Stati.Where(s => s == StatoAccordo.ChiusoPerRevisioneAccordo).Count() > 0 ? "checked" : "") />
+                    <label for="chiusoPerRevisioneAccordo" style="font-size:0.8em;">Chiuso per revisione</label>
+                </div>                        
+            </div>
+        </div>
+        <!-- Filtri Segreteria Tecnica -->
+        @if (@Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_SEGRETERIA_TECNICA.ToDescriptionString()))
+        {
+            <div class="pt-2 pt-lg-5">
+                <h6 class="text-uppercase">Dipartimento</h6>
+                <div class="mt-4">
+                    <input id="dipartimento" type="text" placeholder="Dipartimento" autocomplete="off" asp-for="Dipartimento" />
+                </div>
+            </div>
+            <div class="pt-2 pt-lg-5">
+                <h6 class="text-uppercase">Segreteria Tecnica</h6>
+                <div class="form-check mt-4">
+                    <div>
+                        <input name="vistoSegreteriaTecnica" id="vistoSegreteriaTecnica" type="checkbox" @(Model.VistoSegreteriaTecnica ? "checked" : "")/>
+                        <label for="vistoSegreteriaTecnica" style="font-size:0.8em;">Visto Segreteria Tecnica</label>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</aside>

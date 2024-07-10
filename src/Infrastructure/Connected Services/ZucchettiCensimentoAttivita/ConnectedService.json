@@ -1,0 +1,16 @@
+{
+  "ExtendedData": {
+    "inputs": [
+      "../../../../../../OneDrive - NTT DATA EMEA/Documenti/Clienti/PCM/Lavoro agile/Integrazione Zucchetti/htht_fwsztsanag.wsdl"
+    ],
+    "collectionTypes": [
+      "System.Array",
+      "System.Collections.Generic.Dictionary`2"
+    ],
+    "namespaceMappings": [
+      "*, ZucchettiCensimentoAttivita"
+    ],
+    "targetFramework": "net5.0",
+    "typeReuseMode": "All"
+  }
+}

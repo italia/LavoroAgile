@@ -1,0 +1,169 @@
+﻿@model StrutturaViewModel
+@{
+    ViewData["Title"] = "Nuova Struttura";
+}
+
+<div class="row">
+    <div class="col px-lg-2">
+        <nav class="breadcrumb-container" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/Home">Home</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item active">
+                    <a href="#">Struttura PCM - Nuova Struttura</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row border-bottom mb-5">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1 class="primary-color">@ViewData["Title"]</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Create" id="form">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!--Hidden-->
+    @Html.HiddenFor(s => s.Id)
+    
+    @Html.HiddenFor(s => s.OnlyFirstLevel)  
+    <!--Hidden-->
+
+    <h4 class="primary-color">Primo livello</h4>
+    <hr />
+    <div class="form-row">
+        <div class="form-group col">
+            <input type="text" class="form-control" id="StrutturaLiv1" asp-for="StrutturaLiv1" data-set-responsabile>
+            <label for="StrutturaLiv1">Struttura primo livello</label>
+            <span asp-validation-for="StrutturaLiv1" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div id="struttura-complete" hidden="@Model.OnlyFirstLevel">        
+        <div class="form-row">
+            <div class="form-group col">
+                <input type="text" class="form-control" id="CapoStruttura" asp-for="CapoStruttura.NomeCognome" data-set-responsabile>
+                <label for="CapoStruttura">Capo struttura</label>
+                <span asp-validation-for="CapoStruttura.NomeCognome" class="text-danger"></span>
+            </div>
+            <div class="form-group col">
+                <input type="text" class="form-control" id="EmailCapoStruttura" asp-for="CapoStruttura.Email" data-set-responsabile>
+                <label for="EmailCapoStruttura">Email Capo struttura</label>
+                <span asp-validation-for="CapoStruttura.Email" class="text-danger"></span>
+            </div>
+        </div>
+
+        <h4 class="primary-color">Secondo livello</h4>
+        <hr />
+        <div class="form-row">
+            <div class="form-group col">
+                <input type="text" class="form-control" id="StrutturaLiv2" asp-for="StrutturaLiv2" data-set-responsabile>
+                <label for="StrutturaLiv2">Struttura secondo livello</label>
+                <span asp-validation-for="StrutturaLiv2" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col">
+                <input type="text" class="form-control" id="CapoIntermedio" asp-for="CapoIntermedio.NomeCognome" data-set-responsabile>
+                <label for="CapoIntermedio">Capo intermedio</label>
+                <span asp-validation-for="CapoIntermedio.NomeCognome" class="text-danger"></span>
+            </div>
+            <div class="form-group col">
+                <input type="text" class="form-control" id="EmailCapoIntermedio" asp-for="CapoIntermedio.Email" data-set-responsabile>
+                <label for="EmailCapoIntermedio">Email Capo intermedio</label>
+                <span asp-validation-for="CapoIntermedio.Email" class="text-danger"></span>
+            </div>
+        </div>
+
+        <h4 class="primary-color">Terzo livello</h4>
+        <hr />
+        <div class="form-row">
+            <div class="form-group col">
+                <input type="text" class="form-control" id="StrutturaLiv3" asp-for="StrutturaLiv3" data-set-responsabile>
+                <label for="StrutturaLiv3">Struttura terzo livello</label>
+                <span asp-validation-for="StrutturaLiv3" class="text-danger"></span>
+            </div>
+        </div>    
+
+        <h4 class="primary-color">Responsabile accordo</h4>
+        <hr />
+        <div class="form-row">
+            <div class="form-group col">
+                <input type="text" class="form-control" id="ResponsabileAccordo" asp-for="ResponsabileAccordo.NomeCognome">
+                <label for="ResponsabileAccordo" class="active">Responsabile accordo</label>
+                <span asp-validation-for="ResponsabileAccordo.NomeCognome" class="text-danger"></span>
+            </div>
+            <div class="form-group col">
+                <input type="text" class="form-control" id="EmailResponsabileAccordo" asp-for="ResponsabileAccordo.Email">
+                <label for="EmailResponsabileAccordo" class="active">Email Responsabile accordo</label>
+                <span asp-validation-for="ResponsabileAccordo.Email" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!--
+        La diretta collaborazione non è al momento gestita 
+        Il dirigente responsabile si è deciso che coincida con il responsabile dell'accordo
+    -->
+    @*
+    <div class="form-row">
+        <div class="form-group col form-check">
+            <input type="checkbox" id="DirettaCollaborazione" asp-for="DirettaCollaborazione">
+            <label for="DirettaCollaborazione">Diretta collaborazione</label>
+            <span asp-validation-for="DirettaCollaborazione" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col">
+            <input type="text" class="form-control" id="DirigenteResponsabile" asp-for="DirigenteResponsabile" data-set-responsabile>
+            <label for="DirigenteResponsabile">Dirigente responsabile</label>
+            <span asp-validation-for="DirigenteResponsabile" class="text-danger"></span>
+        </div>
+        <div class="form-group col">
+            <input type="text" class="form-control" id="EmailDirigenteResponsabile" asp-for="EmailDirigenteResponsabile" data-set-responsabile>
+            <label for="EmailDirigenteResponsabile">Email Dirigente responsabile</label>
+            <span asp-validation-for="EmailDirigenteResponsabile" class="text-danger"></span>
+        </div>
+    </div>
+    *@
+
+    <h4 class="primary-color">Referente interno</h4>
+    <hr />   
+
+    <div class="form-row">
+        <div class="form-group col">
+            <input type="text" class="form-control" id="ReferenteInterno" asp-for="ReferenteInterno.NomeCognome">
+            <label for="ReferenteInterno">Referente interno</label>
+            <span asp-validation-for="ReferenteInterno.NomeCognome" class="text-danger"></span>
+        </div>
+        <div class="form-group col">
+            <input type="text" class="form-control" id="EmailReferenteInterno" asp-for="ReferenteInterno.Email">
+            <label for="EmailReferenteInterno">Email Referente interno</label>
+            <span asp-validation-for="ReferenteInterno.Email" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col">
+            <button type="submit" class="btn btn-primary buttonWidth" onclick="return DisplaySpinner();">Salva</button>
+            @*<a href="/Servizio" class="btn btn-primary buttonWidth" role="button">Indietro</a>*@
+            <a href="javascript:void(0);" class="btn btn-primary buttonWidth" role="button" onclick="history.go(-1); return false;">Indietro</a>
+        </div>
+    </div>
+
+</form>
+
+@section Scripts {
+    <script>
+        initStruttura('@Url.Action("AutocompleteLivelloStruttura", "Struttura")');
+    </script>
+}

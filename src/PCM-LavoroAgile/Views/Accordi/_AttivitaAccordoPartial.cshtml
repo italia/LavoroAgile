@@ -1,0 +1,210 @@
+﻿@model AttivitaAccordoViewModel
+<tr>
+    <td width="5%">
+        <div>
+            <div class="col">
+                <span class="attivitaIndex">@(Model.Index + 1).</span>                
+            </div>
+        </div>
+    </td>
+    <td width="85%">
+        <input hidden name="ListaAttivita[@Model.Index].Index" asp-for="Index" />
+        @if(Model.Id != 0)
+        {
+            <div class="form-row">
+                <div class="form-group col">
+                    <span class="font-weight-bold">@("ATT-"+@Model.Id)</span>
+                </div>
+            </div>
+        }        
+        <div class="form-row mt-2">
+            <div class="form-group col">
+                <textarea style="pointer-events: all" name="ListaAttivita[@Model.Index].Attivita" asp-for="Attivita" placeholder="Descrivere attività oggetto dell’accordo"></textarea>
+                <label class="active">Attività <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Attivita"}})" /></label>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col">
+                <textarea style="pointer-events: all" name="ListaAttivita[@Model.Index].Risultati" asp-for="Risultati" placeholder="Descrivere i risultati attesi dell'attività"></textarea>
+                <label class="active">Descrizione risultati attesi <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","RisultatiAttesi"}})" /></label>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col">
+                <input type="text" name="ListaAttivita[@Model.Index].DenominazioneIndicatore" asp-for="DenominazioneIndicatore" placeholder="Descrizione denominazione indicatore" />
+                <label class="active">Indicatore <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Indicatore"}})" /></label>
+            </div>
+            <div class="form-group col">
+                <div class="bootstrap-select-wrapper">
+                    <select name="ListaAttivita[@Model.Index].TipologiaIndicatore" asp-for="TipologiaIndicatore" class="form-control" aria-label="Unità di misura">
+                        <option value="Testo">Testo</option>
+                        <option value="NumeroAssoluto">Numero assoluto</option>
+                        <option value="Percentuale">Percentuale</option>
+                        <option value="Data">Data</option>
+                    </select>
+                    <label class="active">Unità di misura <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","UnitaDiMisura"}})" /></label>
+                </div>
+            </div>
+        </div>
+        <div id="DivIndicatoreTesto">
+            <div class="form-row">
+                <div class="form-group col">
+                    <div class="bootstrap-select-wrapper">
+                        <select name="ListaAttivita[@Model.Index].OperatoreLogicoIndicatoreTesto" asp-for="OperatoreLogicoIndicatoreTesto" class="form-control" aria-label="Target">
+                            <option value="uguale a">uguale a</option>
+                            <option value="diverso da">diverso da</option>
+                        </select>
+                        <label class="active">Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Target"}})" /></label>
+                    </div>
+                </div>
+                <div class="form-group col">
+                    <input type="text" name="ListaAttivita[@Model.Index].TestoTarget" asp-for="TestoTarget" placeholder="Descrizione target" aria-label="Descrizione target" />
+                    <label class ="active">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                </div>
+            </div>
+        </div>
+        <div id="DivIndicatoreNumeroAssoluto">
+            <div class="form-row">
+                <div class="form-group col">
+                    <div class="bootstrap-select-wrapper">
+                        <select name="ListaAttivita[@Model.Index].OperatoreLogicoIndicatoreNumeroAssoluto" asp-for="OperatoreLogicoIndicatoreNumeroAssoluto" class="form-control" aria-label="Target">
+                            <option value="uguale a">uguale a</option>
+                            <option value="diverso da">diverso da</option>
+                            <option value="maggiore di">maggiore di</option>
+                            <option value="maggiore uguale a">maggiore uguale a</option>
+                            <option value="minore di">minore di</option>
+                            <option value="minore uguale a">minore uguale a</option>
+                            <option value="compreso tra">compreso tra</option>
+                        </select>
+                        <label class="active">Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","TargetNumero"}})" /></label>
+                    </div>
+                </div>
+                <div id="DivNumeroAssolutoTarget">
+                    <div class="form-group col">
+                        <input type="number" name="ListaAttivita[@Model.Index].NumeroAssolutoTarget" asp-for="NumeroAssolutoTarget" placeholder="Target numerico" aria-label="Target numerico" />
+                        <label class="active">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                    </div>
+                </div>
+                <div id="DivNumeroAssolutoDaTarget">
+                    <div class="form-group col">
+                        <input type="number" name="ListaAttivita[@Model.Index].NumeroAssolutoDaTarget" asp-for="NumeroAssolutoDaTarget" placeholder="Target 'da' numerico" aria-label="Target 'da' numerico" />
+                        <label class="active">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                    </div>
+                </div>
+                <div id="DivNumeroAssolutoATarget">
+                    <div class="form-group col">
+                        <input type="number" name="ListaAttivita[@Model.Index].NumeroAssolutoATarget" asp-for="NumeroAssolutoATarget" placeholder="Target 'a' numerico" aria-label="Target 'a' numerico" />
+                        <label class="active">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="DivIndicatorePercentuale">
+            <div class="form-row">
+                <div class="form-group col">
+                    <input type="text" name="ListaAttivita[@Model.Index].PercentualeIndicatoreDenominazioneNumeratore" asp-for="PercentualeIndicatoreDenominazioneNumeratore" placeholder="Denominazione numeratore" />
+                    <label class="active">Numeratore <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","NumeratorePercentuale"}})" /></label>
+                </div>
+                <div class="form-group col">
+                    <input type="text" name="ListaAttivita[@Model.Index].PercentualeIndicatoreDenominazioneDenominatore" asp-for="PercentualeIndicatoreDenominazioneDenominatore" placeholder="Denominazione denominatore" />
+                    <label class="active">Denominatore <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DenominatorePercentuale"}})" /></label>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col">
+                    <div class="bootstrap-select-wrapper">
+                        <select name="ListaAttivita[@Model.Index].OperatoreLogicoIndicatorePercentuale" asp-for="OperatoreLogicoIndicatorePercentuale" class="form-control" aria-label="Target">
+                            <option value="uguale a">uguale a</option>
+                            <option value="diverso da">diverso da</option>
+                            <option value="maggiore di">maggiore di</option>
+                            <option value="maggiore uguale a">maggiore uguale a</option>
+                            <option value="minore di">minore di</option>
+                            <option value="minore uguale a">minore uguale a</option>
+                            <option value="compreso tra">compreso tra</option>
+                        </select>
+                        <label class="active">Targe <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Target"}})" />t</label>
+                    </div>
+                </div>
+                <div id="DivPercentualeTarget">
+                    <div class="form-group col">
+                        <input type="number" name="ListaAttivita[@Model.Index].PercentualeTarget" asp-for="PercentualeTarget" placeholder="Target numerico" aria-label="Target numerico" />
+                        <label class="active">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                    </div>
+                </div>
+                <div id="DivPercentualeDaTarget">
+                    <div class="form-group col">
+                        <input type="number" name="ListaAttivita[@Model.Index].PercentualeDaTarget" asp-for="PercentualeDaTarget" placeholder="Target 'da' numerico" aria-label="Target 'da' numerico" />
+                        <label class="active">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                    </div>
+                </div>
+                <div id="DivPercentualeATarget">
+                    <div class="form-group col">
+                        <input type="number" name="ListaAttivita[@Model.Index].PercentualeATarget" asp-for="PercentualeATarget" placeholder="Target 'a' numerico" aria-label="Target 'a' numerico" />
+                        <label class="active">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="DivIndicatoreData">
+            <div class="form-row">
+                <div class="form-group col">
+                    <div class="bootstrap-select-wrapper">
+                        <select name="ListaAttivita[@Model.Index].OperatoreLogicoIndicatoreData" asp-for="OperatoreLogicoIndicatoreData" class="form-control" aria-label="Target">
+                            <option value="uguale a">uguale a</option>
+                            @*<option value="diverso da">diverso da</option>
+                            <option value="maggiore di">maggiore di</option>
+                            <option value="maggiore uguale a">maggiore uguale a</option>
+                            <option value="minore di">minore di</option>*@
+                            <option value="minore uguale a">minore uguale a</option>
+                            <option value="compreso tra">compreso tra</option>
+                        </select>
+                        <label class="active">Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Target"}})" /></label>
+                    </div>
+                </div>
+                <div id="DivDataTarget">
+                    <div class="form-group col">
+                        <input type="text" class="form-control it-date-datepicker" name="ListaAttivita[@Model.Index].DataTarget" asp-for="DataTarget" placeholder="gg/mm/aaaa" autocomplete="off" aria-label="Data target">
+                        <label class="active">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                     </div>
+                </div>
+                <div id="DivDataDaTarget">
+                    <div class="form-group col">
+                        <input type="text" class="form-control it-date-datepicker" name="ListaAttivita[@Model.Index].DataDaTarget" asp-for="DataDaTarget" placeholder="gg/mm/aaaa" autocomplete="off" aria-label="Data 'da' target">
+                        <label class="active">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                    </div>
+                </div>
+                <div id="DivDataATarget">
+                    <div class="form-group col">
+                        <input type="text" class="form-control it-date-datepicker" name="ListaAttivita[@Model.Index].DataATarget" asp-for="DataATarget" placeholder="gg/mm/aaaa" autocomplete="off" aria-label="Data 'a' target">
+                        <label class="active">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input hidden name="ListaAttivita[@Model.Index].IndexStop" />
+    </td>
+    @if (
+       (ViewData["stato"] == null ||
+       ViewData["stato"].Equals(StatoAccordo.Bozza) ||
+       ViewData["stato"].Equals(StatoAccordo.RichiestaModificaCI) ||
+       ViewData["stato"].Equals(StatoAccordo.RichiestaModificaCS) ||
+       ViewData["stato"].Equals(StatoAccordo.RichiestaModificaRA))
+       &&
+       (ViewData["role"] == null ||
+       ViewData["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()))
+       )
+    {
+        <td width="10%">
+            <div class="row text-center">
+                <div class="col">
+                    <button class="ibtnDel btn btn-primary btn-icon" style="width:150px" aria-describedby="Elimina">
+                        <svg class="icon icon-white">
+                            <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-delete"></use>
+                        </svg>
+                        <span>Elimina</span>
+                    </button>
+                </div>
+            </div>
+        </td>
+    }
+</tr>

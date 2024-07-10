@@ -1,0 +1,106 @@
+﻿@model AccordoViewModel
+@{
+    ViewData["Title"] = "Valutazione Accordo";
+    var strutture = (IEnumerable<StrutturaViewModel>)ViewData["strutture"];
+}
+<div class="row">
+    <div class="col px-lg-2">
+        <nav class="breadcrumb-container" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/Home">Home</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/valutazioni?role=@Context.Request.Query["role"]">Valuta Accordi</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item active">
+                    <a href="#">Valutazione accordo</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row border-bottom mb-5">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1 class="primary-color">@ViewData["Title"]</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Edit" id="form" asp-route-role="@Context.Request.Query["role"]">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!--Hidden-->
+    @Html.HiddenFor(a => a.Id)
+    @Html.HiddenFor(a => a.CreationDate)
+    @Html.HiddenFor(a => a.EditTime)
+    @Html.HiddenFor(a => a.StrutturaUfficioServizio)
+    @Html.HiddenFor(a => a.NumLivelliStruttura)
+    @Html.HiddenFor(a => a.DirigenteResponsabile.Id)
+    @Html.HiddenFor(a => a.DirigenteResponsabile.Email)
+    @Html.HiddenFor(a => a.DirigenteResponsabile.NomeCognome)
+    @Html.HiddenFor(a => a.DataInizioUtc)
+    @Html.HiddenFor(a => a.DataFineUtc)
+    <!--Hidden-->
+
+    <div style="border:thin gray solid" class="pt-5">
+        <div class="form-row">
+            <div class="form-group col">
+                <input type="text" class="form-control" id="NomeCognome" asp-for="Dipendente.NomeCognome" disabled>
+                <label for="NomeCognome">Nome Cognome</label>
+            </div>
+
+            <div class="form-group col">
+                <div class="bootstrap-select-wrapper">
+                    <input type="text" class="form-control" id="Periodo" disabled value="@Model.DataInizioUtc.Value.Date.ToShortDateString() - @Model.DataFineUtc.Value.Date.ToShortDateString()">
+                    <label for="UidStrutturaUfficioServizio" class="control-label">Periodo</label>
+                </div>
+            </div>
+
+            <div class="form-group col">
+                <input type="text" class="form-control" id="ResponsabileAccordo" asp-for="ResponsabileAccordo" placeholder="Responsabile Accordo" readonly>
+                <label>Responsabile accordo</label>
+                <span asp-validation-for="ResponsabileAccordo" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    
+    <br />
+    <h4 class="primary-color">Attività da Accordo</h4>
+    <div style="border:thin gray solid" class="p-2">
+        <div class="table-responsive">
+            <table id="tableAttivita" class="table">
+                <tbody>
+                    @foreach (AttivitaAccordoViewModel attivitaAccordoViewModel in Model.ListaAttivita)
+                    {
+                        <partial name="_AttivitaAccordoPartial" model="attivitaAccordoViewModel" />
+                    }
+                </tbody>
+            </table>
+            <div>
+                <div class="col">
+                    <label>Note</label>
+                </div>
+            </div>
+            <div>
+                <div class="col">
+                    <textarea class="text-danger" name="NotaDipendente" asp-for="NotaDipendente"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="form-row">
+        <div class="form-group col">
+            <a href="javascript:void(0);" class="btn btn-primary buttonWidth" role="button" onclick="history.go(-1); return false;">Indietro</a>
+        </div>
+        <div class="form-group col">
+            <button type="submit" class="btn btn-warning buttonWidth float-right" onclick="return DisplaySpinner();">Sottoponi Valutazione Accordo</button>
+        </div>
+    </div>
+
+</form>

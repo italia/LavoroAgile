@@ -1,0 +1,35 @@
+﻿@if (TempData["AppNotification"] != null)
+{
+    var notification = Newtonsoft.Json.JsonConvert.DeserializeObject<PCM_LavoroAgile.Extensions.Notification>(TempData["AppNotification"].ToString());
+
+    string title = "Successo";
+    string icon = "check";
+    if (notification.Type == PCM_LavoroAgile.Extensions.NotificationType.Error.ToString().ToLower())
+    {
+        title = "Errore";
+        icon = "close";
+    }
+
+    <text>
+        <div class="notification with-icon @notification.Type" role="alert" aria-labelledby="@notification.Type-title" id="@notification.Type">
+            <h5 id="@notification.Type-title"><svg class="icon"><use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-@icon-circle"></use></svg>@title</h5>
+            <p style="font-size:20px">
+                <strong>@notification.Message</strong>
+            </p>
+        </div>
+    </text>
+
+}
+
+<script>
+    @if (TempData["AppNotification"] != null)
+    {
+        var notification = Newtonsoft.Json.JsonConvert.DeserializeObject<PCM_LavoroAgile.Extensions.Notification>(TempData["AppNotification"].ToString());
+        <text>
+            $(document).ready(function () {
+                notificationShow('@notification.Type')
+            });
+        </text>
+    }
+
+</script>

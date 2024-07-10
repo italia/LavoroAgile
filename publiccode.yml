@@ -1,0 +1,82 @@
+# This repository adheres to the publiccode.yml standard by including this 
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+name: Gestione accordi di Lavoro Agile
+applicationSuite: Lavoro Agile
+url: |-
+  https://mteampcm@dev.azure.com/mteampcm/PCM%20-%20Lavoro%20Agile/_git/LavoroAgileDevelopers
+landingURL: |-
+  https://mteampcm@dev.azure.com/mteampcm/PCM%20-%20Lavoro%20Agile/_git/LavoroAgileDevelopers
+roadmap: |-
+  https://mteampcm@dev.azure.com/mteampcm/PCM%20-%20Lavoro%20Agile/_git/LavoroAgileDevelopers
+releaseDate: '2024-07-08'
+softwareVersion: 2.0.0
+developmentStatus: stable
+softwareType: standalone/web
+platforms:
+  - web
+usedBy:
+  - Presidenza del consiglio dei Ministri
+categories:
+  - hr
+legal:
+  license: MIT
+intendedAudience:
+  scope:
+    - government
+  countries:
+    - it
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - it
+it:
+  riuso:
+    codiceIPA: pcm
+  conforme:
+    lineeGuidaDesign: true
+    misureMinimeSicurezza: true
+    gdpr: true
+description:
+  it:
+    localisedName: Gestione accordi di Lavoro Agile
+    genericName: Gestione accordi di Lavoro Agile
+    documentation: |-
+      https://mteampcm@dev.azure.com/mteampcm/PCM%20-%20Lavoro%20Agile/_git/LavoroAgileDevelopers
+    shortDescription: |-
+      Lavoro Agile è una applicazione che consente di gestire gli accordi di lavoro agile per un'amministrazione pubblica.
+    longDescription: |2
+      Lavoro Agile è una applicazione che consente di gestire gli accordi di lavoro agile per un'amministrazione pubblica.
+
+      L'implementazione è aderente a quanto previsto dal Decreto Legge 31 dicembre 2020, n. 183 e s.m.i.
+
+      L'applicazione si integra con:
+
+      - Il motore di Workflow open source [Elsa](++https://elsa-workflows.github.io/elsa-core/++), su cui girano i workflow di approvazione degli accordi
+
+      - Zucchetti, da cui recupera attraverso un report custom l'anagrafica utenti
+
+      - ZTimesheet, a cui invia le informazioni su attività e giornate di smart working
+
+      - Ministero del Lavoro, cui vengono inviate informazioni sull'accordo di lavoro agile utili alle azioni di controllo
+
+      - Server di email per inviare le notifiche
+
+      - Server LDAP per autenticare gli utenti in una installazione Intranet
+
+      L'integrazione con Zucchetti è disattivabile ed al suo posto è possibile attivare la modalità che consente di recuperare le informazioni sulle strutture direttamente dalla base dati, previo censimento delle stesse da parte dell'amministratore.
+
+      Tutte le interazioni in uscita (ZTimesheet, Ministero,  Mail) sono mediate da un sistema di code.
+
+      A corredo dell'applicazione, sono presenti due applicazioni che consentono di definire workflow e di monitorare lo stato della coda e dei workflow.
+
+    features:
+      - Generazione, modifica, sottoscrizione, ricerca di un accordi di lavoro agile
+      - Valutazione di accordi
+      - Invio informazioni di accordo a Ministero del lavoro
+      - Invio informazioni su attività e giornate di un accordo a sistemi esterni (oggi Zucchetti)
+      - Reportistica
+maintenance:
+  type: internal

@@ -1,0 +1,33 @@
+﻿@model SearchViewModel
+<aside class="col-lg-3 py-lg-5">
+    <div class="collapse d-lg-block d-xl-block" id="categoryCollapse">
+        <div class="pt-2 pt-lg-5">
+            <h6 class="text-uppercase">Codice accordo</h6>
+            <div class="mt-4">
+                <input id="codice" type="text" placeholder="Codice accordo" autocomplete="off" asp-for="Codice" />
+            </div>
+        </div>
+        <div class="pt-2 pt-lg-5">
+            <h6 class="text-uppercase">Data inizio</h6>
+            <div class="mt-4">
+                <div class="bootstrap-select-wrapper">
+                    <select id="singola-intervallo">
+                        <option value="fra">In intervallo</option>
+                        <option value="da">A partire da</option>
+                        <option value="a">Fino a</option>
+                    </select>
+                </div>
+                <div class="it-datepicker-wrapper">
+                    <input class="form-control it-date-datepicker" id="dataDa" type="text" placeholder="Da" autocomplete="off" asp-for="DataDa">
+                    <input class="form-control it-date-datepicker" id="dataA" type="text" placeholder="A" autocomplete="off" asp-for="DataA">
+                </div>
+                <div id="invalidDates" class="invalid-feedback">Controllare intervallo date.</div>
+
+            </div>
+        </div>
+      
+        <div class="mt-4">
+            <input type="button" class="btn btn-primary" value="Aggiorna risultati" onclick="refineSearch()" />
+        </div>
+    </div>
+</aside>

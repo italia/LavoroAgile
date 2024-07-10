@@ -1,0 +1,164 @@
+﻿@model SearchStatViewModel
+
+<input type="hidden" id="total-search-elements" value="@Model.totalElements" />
+<div class="row">
+    <div class="col-lg-6">
+        <table class="table table-responsive-sm table-sm table-hover table-bordered">
+
+            <thead>
+                <tr class="table-active">
+
+                    <th colspan="3" class="card-title">Accordi in essere</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Accordi sottoscritti</td>
+                    <td>@Model.Acc_sottoscritti</td>
+                    <td><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#277501" class="bi bi-circle-fill" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" /></svg></td>
+                </tr>
+                <tr>
+                    <td>di cui Accordi presentati per la prima volta</td>
+                    <td>@Model.Acc_PrimoAccordo</td>
+                </tr>
+                <tr>
+                    <td>Giornate di lavoro agile complessivamente accordate</td>
+                    <td>@Model.Acc_TotGiornateLavoro</td>
+
+                </tr>
+                <tr>
+                    <td>Media giornate di lavoro agile per accordo</td>
+                    <td>@Model.Acc_MediaGiornateLavoro</td>
+
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-responsive-sm table-sm table-hover table-bordered">
+            <thead>
+                <tr class="table-active">
+                    <th colspan="3">Accordi non validati/approvati</th>
+                </tr>
+            </thead>
+            <tr>
+                <td>Proposte non validate dal responsabile dell’accordo </td>
+                <td>@Model.Acc_NoValidateResponsabileAccordo</td>
+                <td><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#BE0101" class="bi bi-circle-fill" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" /></svg></td>
+
+            </tr>
+            <tr>
+                <td>Proposte non validate dal capo intermedio</td>
+                <td>@Model.Acc_NonValidateCapoIntermedio</td>
+                <td><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#DC3232" class="bi bi-circle-fill" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" /></svg></td>
+
+            </tr>
+            <tr>
+                <td>Proposte non approvate (non validate dal capo struttura)</td>
+                <td>@Model.Acc_NoValidateCapoStruttura</td>
+                <td><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#F06464" class="bi bi-circle-fill" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" /></svg></td>
+
+            </tr>
+        </table>
+        <table class="table table-responsive-sm table-sm table-hover table-bordered">
+            <thead>
+                <tr class="table-active">
+                    <th colspan="3">Accordi in attesa di sottoscrizione </th>
+                </tr>
+            </thead>
+            <tr>
+                <td>Proposte in attesa di validazione del responsabile dell’accordo</td>
+                <td>@Model.Acc_AttesaResponsabileAccordo</td>
+                <td><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#EAE601" class="bi bi-circle-fill" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" /></svg></td>
+
+            </tr>
+            <tr>
+                <td>Proposte in attesa di validazione del capo intermedio</td>
+                <td>@Model.Acc_AttesaCapoIntermedio</td>
+                <td><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#EAC801" class="bi bi-circle-fill" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" /></svg></td>
+
+            </tr>
+            <tr>
+                <td>Proposte in attesa di approvazione del capo struttura</td>
+                <td>@Model.Acc_AttesaCapoStruttura</td>
+                <td><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#EAAA01" class="bi bi-circle-fill" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" /></svg></td>
+
+            </tr>
+            <tr>
+                <td>Proposte in stato richiesta di integrazione </td>
+                <td>@Model.Acc_AttesaRichiestaIntegrazione</td>
+                <td><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#0142EA" class="bi bi-circle-fill" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" /></svg></td>
+
+            </tr>
+            <tr>
+                <td>Proposte in attesa di sottoscrizione</td>
+                <td>@Model.Acc_AttesaSottoscrizione</td>
+                <td><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#61EA01" class="bi bi-circle-fill" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" /></svg></td>
+
+            </tr>
+            <tr>
+                <td>Giornate di lavoro agile complessivamente in attesa di sottoscrizione</td>
+                <td>@Model.Acc_TotGiornateLavoroAttesa</td>
+
+            </tr>
+            <tr>
+                <td>Media giornate di lavoro agile per proposta in attesa di sottoscrizione</td>
+                <td>@Model.Acc_MediaGiornateLavoroAttesa</td>
+
+            </tr>
+
+        </table>
+        @if (Model.role.Equals(RoleAndKeysClaimEnum.KEY_CLAIM_SEGRETERIA_TECNICA.ToDescriptionString()))
+        {
+            <table class="table table-responsive-sm table-sm table-hover table-bordered">
+                <thead>
+                    <tr class="table-active">
+                        <th colspan="2">Accordi sottoscritti e avviati per la prima volta</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>Esaminati dalla Segreteria Tecnica</td>
+                    <td>@Model.St_Esaminati</td>
+                </tr>
+                <tr>
+                    <td>di cui esaminati e validati senza annotazioni</td>
+                    <td>@Model.St_EsaminatiValidatisenzaAnnotazioni</td>
+                </tr>
+                <tr>
+                    <td>di cui esaminati e validati con annotazioni</td>
+                    <td>@Model.St_EsaminatiValidaticonAnnotazioni</td>
+                </tr>
+                <tr>
+                    <td>in attesa di essere esaminati dalla Segreteria Tecnica</td>
+                    <td>@Model.St_InAttesa</td>
+                </tr>
+                <tr>
+                    <td>Accordi con annotazioni dei referenti interni</td>
+                    <td>@Model.St_conAnnotazioniReferentiInterni</td>
+                </tr>
+            </table>
+            <table class="table table-responsive-sm table-sm table-hover table-bordered">
+                <thead>
+                    <tr class="table-active">
+                        <th colspan="2">Accordi in corso con modifiche</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td>Accordi modificati su richiesta del dipendente</td>
+                    <td>@Model.St_ModificatiDipendente</td>
+                </tr>
+                <tr>
+                    <td>Accordi modificati su richiesta del dirigente</td>
+                    <td>@Model.St_ModificatiDirigente</td>
+                </tr>
+            </table>
+
+        }
+    </div>
+    <div class="col-lg-6">
+        <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+
+</div>
+<script>
+    var bolla = JSON.parse('@Html.Raw(Json.Serialize(Model))');
+</script>
+

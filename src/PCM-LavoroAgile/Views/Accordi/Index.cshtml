@@ -1,0 +1,87 @@
+﻿@model SearchViewModel
+
+<div class="row">
+    <div class="col px-lg-2">
+        <nav class="breadcrumb-container" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="Home">Home</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item active">
+                    <a href="#">Risultato della ricerca</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1 class="primary-color">Lista degli accordi</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row border-top">
+    <partial name="_SearchFilters" model="Model" />
+    <partial name="_AzioniMassiveDialog" />
+    <section class="col-lg-9 py-lg-5 container affix-parent" id="search-resuls-section">
+        <div class="d-none d-lg-block d-xl-block affix-top foreground bg-white p-3">
+            <div class="row pb-3 px-4 border-bottom">
+                <div class="col">
+                    <span class="total-results">Ricerca in corso...</span>
+                </div>
+                <!-- pulsante delle azioni massivie visibile solo ai dirigenti -->
+                @if (Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()) || Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_INTERMEDIO.ToDescriptionString()) || Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_STRUTTURA.ToDescriptionString()))
+                {
+                    <div class="auto">
+                        <span id="azioni-popover" class="d-inline-block" tabindex="0" data-toggle="popover" data-trigger="hover" data-placement="top" data-html="true" title="Gestisci più accordi" data-content="Selezionare almeno un accordo per attivare il pulsante">
+                            <button class="btn btn-sm btn-success buttonWidth" style="pointer-events: none;" id="azioni-massive-input" disabled>Gestisci più accordi</button>
+                        </span>
+                    </div>
+
+                }
+            </div>
+        </div>
+        <p id="no-results" class="hide"><em>Nessun elemento individuato.</em></p>
+        <!-- Risultati ricerca. -->
+        <!-- Caricamento risultati -->
+        <div id="loading" class="progress progress-indeterminate">
+            <span class="sr-only">In caricamento...</span>
+            <div class="progress-bar" role="progressbar"></div>
+        </div>
+    </section>
+</div>
+@section Scripts {
+    <script src="~/lib/jquery-inview/dist/jquery.inview.min.js"></script>
+    <script src="~/js/search-manager.js" asp-append-version="true"></script>
+    <script src="~/js/azioni-massive.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $(function () {
+                $('[data-toggle="popover"]').popover()
+            })
+
+            var pageSize = @Model.PageSize;
+            var role = getQueryParam('role');
+            var fromPage = getQueryParam('fromPage');
+            var searchUrl = '@Url.Action("GetSearchResultPage", "Accordi")';    
+
+            // Recupero l'eventuale SearchViewModel dal viewdata per riproporre i filtri di ricerca
+            var searchViewModel = '@ViewData["searchViewModel"]'.replace(/&quot;/g,'"');
+
+            // Registrazione del view handler per la gestione della paginazione.
+            registerInViewHandler(role, pageSize, '#loading', '.total-results', '#no-results', searchUrl, '#total-search-elements', searchViewModel);
+
+            // Inizializzazione dei filtri.
+            initFilters();
+
+            // Inizializzazione del gestore delle selezioni di elementi
+            initSelectionManager('#search-resuls-section', role, '#azioni-massive-input', '#azioni-popover');            
+        });
+
+    </script>
+}
