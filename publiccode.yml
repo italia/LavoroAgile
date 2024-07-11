@@ -6,11 +6,11 @@ publiccodeYmlVersion: '0.2'
 name: Gestione accordi di Lavoro Agile
 applicationSuite: Lavoro Agile
 url: |-
-  https://mteampcm@dev.azure.com/mteampcm/PCM%20-%20Lavoro%20Agile/_git/LavoroAgileDevelopers
+  https://github.com/italia/LavoroAgile.git
 landingURL: |-
-  https://mteampcm@dev.azure.com/mteampcm/PCM%20-%20Lavoro%20Agile/_git/LavoroAgileDevelopers
+  https://github.com/italia/LavoroAgile
 roadmap: |-
-  https://mteampcm@dev.azure.com/mteampcm/PCM%20-%20Lavoro%20Agile/_git/LavoroAgileDevelopers
+  https://github.com/italia/LavoroAgile?tab=readme-ov-file#roadmap
 releaseDate: '2024-07-08'
 softwareVersion: 2.0.0
 developmentStatus: stable
@@ -33,6 +33,7 @@ localisation:
   availableLanguages:
     - it
 it:
+  countryExtensionVersion: '0.2'
   riuso:
     codiceIPA: pcm
   conforme:
