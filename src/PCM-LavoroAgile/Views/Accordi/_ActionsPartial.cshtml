@@ -1,0 +1,386 @@
+﻿@using PCM_LavoroAgile.Extensions;
+@inject IOptionsSnapshot<ZucchettiServiceSettings> ZucchettiSettings
+@model AccordoViewModel
+<div class="d-flex justify-content-end">
+    <div class="col:empty">
+        <div class="row">
+            <div class="col">
+                <!-- Se in bozza e utente, sottomissione accordo -->
+                @if (Model.Stato == StatoAccordo.Bozza &&
+                Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()))
+                {
+                    <!-- Se si tratta di un rinnovo, le approvazioni possono essere effettuate solo se
+                        l'accordo precedente ha valutazione positiva  -->
+                    string popOverTitle = "", popOverContent = "", pointerType = "all";
+                    bool disabled = false;
+
+                    //Se non è una revisione accordo allora si verifica se è un rinnovo
+                    if (!Model.RevisioneAccordo)
+                    {
+                        if (!Guid.Empty.Equals(Model.ParentId) &&
+                        !(Model.ValutazioneEsitiAccordoPrecedente?.Equals("Positiva", StringComparison.OrdinalIgnoreCase) ?? false))
+                        {
+                            popOverTitle = "Impossibile trasmettere";
+                            popOverContent = "Non è possibile trasmettere la richiesta di approvazione perché manca la valutazione dell'accordo precedente o la valutazione è negativa.";
+                            disabled = true;
+                            pointerType = "none";
+                        }
+                    }
+
+                    <span class="d-inline-block" tabindex="0" data-toggle="popover" data-trigger="hover" data-placement="top" data-html="true" title="@popOverTitle" data-content="@popOverContent">
+                        <button type="button" id="saveAndTrasmitActionPartial" class="btn btn-sm btn-success buttonWidth" onclick="return DisplaySpinner();" style="pointer-events: @pointerType;" disabled="@disabled" >Trasmetti</button>
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col:empty">
+        <div class="row">
+            <div class="col">
+
+                <!-- Se sottomesso e dirigente responsabile/capo intermedio/capo struttura, Accetta/Rifiuta/Richiedi modifiche -->
+                @if ((Model.Stato == StatoAccordo.DaApprovareRA && Model.ResponsabileAccordo.Id.Equals(User.GetUserId()) && Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString())) ||
+                (Model.Stato == StatoAccordo.DaApprovareCI && Model.CapoIntermedio.Id.Equals(User.GetUserId()) && Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_INTERMEDIO.ToDescriptionString())) ||
+                (Model.Stato == StatoAccordo.DaApprovareCS && Model.CapoStruttura.Id.Equals(User.GetUserId()) && Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_STRUTTURA.ToDescriptionString())))
+                {
+                    <!-- Se si tratta di un rinnovo, le approvazioni possono essere effettuate solo se
+                        mancano almeno due settimane dalla fine dell'accordo precedente e se l'accordo precedente
+                        è stato valutato -->
+                    string popOverTitle = "", popOverContent = "", pointerType = "all";
+                    bool disabled = false;
+
+                    //Se non è una revisione accordo allora si verifica se è un rinnovo
+                    if (!Model.RevisioneAccordo)
+                    {
+                        if (!Guid.Empty.Equals(Model.ParentId) &&
+                        !(Model.ValutazioneEsitiAccordoPrecedente?.Equals("Positiva", StringComparison.OrdinalIgnoreCase) ?? false))
+                        {
+                            popOverTitle = "Impossibile approvare";
+                            popOverContent = "Non è possibile eseguire l'azione perché manca la valutazione dell'accordo precedente o la valutazione è negativa.";
+                            disabled = true;
+                            pointerType = "none";
+                        }
+                    }
+                    <span class="d-inline-block" tabindex="0" data-toggle="popover" data-trigger="hover" data-placement="top" data-html="true" title="@popOverTitle" data-content="@popOverContent">
+                        <button type="button" id="approva-input" class="btn btn-sm btn-success buttonWidth" style="pointer-events: @pointerType;" data-action="approva" disabled="@disabled">Approva e Sottoscrivi</button>
+                        <button type="button" id="rifiuta-input" class="btn btn-sm btn-danger buttonWidth" style="pointer-events: @pointerType;" data-action="rifiuta" disabled="@disabled">Rifiuta</button>
+                        <button type="button" id="integra-input" class="btn btn-sm btn-info buttonWidth" style="pointer-events: @pointerType;" data-action="integra" disabled="@disabled">Richiedi modifica</button>
+                    </span>
+
+                }
+
+            </div>
+        </div>
+    </div>
+    <div class="col:empty">
+        <form asp-action="InviaModifica" asp-controller="Approvals" id="approval-form" asp-route-role="@Context.Request.Query["role"]">
+            @Html.HiddenFor(a => a.Id)
+            <div class="row">
+                <div class="col">
+                    <!-- Se un dirigente ha richiesto delle modifiche e sono utente, invia la modifica -->
+                    @if ((Model.Stato == StatoAccordo.RichiestaModificaRA ||
+                    Model.Stato == StatoAccordo.RichiestaModificaCI ||
+                    Model.Stato == StatoAccordo.RichiestaModificaCS) &&
+                    Model.Dipendente.Id.Equals(User.GetUserId()) && Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()))
+                    {
+                        <button type="submit" name="action" value="@("InviaModifica" + Model.Stato.ToString()[^2..] )" class="btn btn-sm btn-success buttonWidth">Invia modifiche</button>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col:empty">
+        <form asp-action="Sottoscrivi" asp-controller="Approvals" id="approval-form" asp-route-role="@Context.Request.Query["role"]">
+            @Html.HiddenFor(a => a.Id)
+            <div class="row">
+                <div class="col">
+                    @{
+                        var numChar = Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()) ? 2 : 1;
+                    }
+                    <!-- Se utente o responsabile accordo e stato in DaSottoscrivereX, sottoscrivi accordo. -->
+                    @if ((Model.Stato == StatoAccordo.DaSottoscrivereRA && Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString())) ||
+                    (Model.Stato == StatoAccordo.DaSottoscrivereP && !Model.Ripianificare && Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString())))
+                    {
+                        <button type="submit" name="action" value="@("Sottoscritto" + Model.Stato.ToString()[^numChar..] )" class="btn btn-sm btn-success buttonWidth">Sottoscrivi</button>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col:empty">
+        <div class="row">
+            <div class="col">
+                <!-- Se Accordo in corso, stato sottoscritto o recesso pianificato e utente o responsabile accordo, possibilità di recedere -->
+                @if (Model.InCorso && (Model.Stato == StatoAccordo.Sottoscritto || Model.Stato == StatoAccordo.RecessoPianificato) &&
+                (Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()) || Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString())))
+                {
+                    string popOverTitle = "", popOverContent = "", pointerType = "all";
+                    bool disabled = false;
+
+                    <!-- Se c'è data di recesso -->
+                    if (Model.DataRecesso.HasValue)
+                    {
+                        popOverTitle = "Impossibile recedere";
+                        popOverContent = "Non è possibile recedere perché è già stata effettuata una richiesta di recesso.";
+                        disabled = true;
+                        pointerType = "none";
+                    }
+                    <!-- Se non è possibile recedere perché per l'accordo è stato richiesto un rinnovo o una revisione -->
+                    if (Model.RinnovoRichiesto)
+                    {
+                        popOverTitle = "Impossibile recedere";
+                        popOverContent = "Non è possibile recedere perché è stato richiesto un rinnovo o una revisione dell'accordo.";
+                        disabled = true;
+                        pointerType = "none";
+
+                    }
+                    <span class="d-inline-block" tabindex="0" data-toggle="popover" data-trigger="hover" data-placement="top" data-html="true" title="@popOverTitle" data-content="@popOverContent">
+                        <button type="button" id="recedi-input" class="btn btn-sm btn-danger buttonWidth" style="pointer-events: @pointerType;" data-action="recedi" data-data-fine="@Model.DataFineUtc.Value.Date.ToString("o")" disabled="@disabled">Recesso</button>
+                    </span>
+                }
+
+            </div>
+        </div>
+    </div>
+    <div class="col:empty">
+        <div class="row ml-auto">
+            <div class="col">
+                <!-- Se Accordo in corso, stato Sottoscritto o Recesso pianificato ed utente, possibiltà di rinnovare. -->
+                @if (Model.InCorso && (Model.Stato == StatoAccordo.Sottoscritto || Model.Stato == StatoAccordo.RecessoPianificato) && Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()))
+                {
+                    string popOverTitle = "", popOverContent = "", pointerType = "all";
+                    string disabledCss = string.Empty;
+
+                    <!-- Se utente inibito per valutazione negativa, aggiorna messaggio popover -->
+                    if (!Model.isValutazionePositiva)
+                    {
+                        popOverTitle = "Impossibile rinnovare";
+                        popOverContent = "Non è possibile rinnovare l'accordo per valutazione negativa o assente.";
+                        disabledCss = "disabled";
+                        pointerType = "none";
+
+                    }
+                    <!-- Se per l'accordo è stato effettuata una richiesta di recesso, aggiorna popover -->
+                    if (Model.DataRecesso.HasValue)
+                    {
+                        popOverTitle = "Impossibile rinnovare";
+                        popOverContent = "Non è possibile rinnovare perché per questo accordo è stato richiesto un recesso.";
+                        disabledCss = "disabled";
+                        pointerType = "none";
+                    }
+                    <!-- Se per l'accordo è stato già richiesto un rinnovo, aggiorna popover -->
+                    if (Model.RinnovoRichiesto)
+                    {
+                        popOverTitle = "Impossibile rinnovare";
+                        popOverContent = "Non è possibile rinnovare perché per questo accordo è stato già richiesto il rinnovo.";
+                        disabledCss = "disabled";
+                        pointerType = "none";
+                    }
+                    <!-- Se per l'accordo è stato già richiesta una revisione, aggiorna popover -->
+                    if (Model.RevisioneAccordo)
+                    {
+                        popOverTitle = "Impossibile rinnovare";
+                        popOverContent = "Non è possibile rinnovare perché per questo accordo è stata già richiesta una revisione.";
+                        disabledCss = "disabled";
+                        pointerType = "none";
+                    }
+                    <span class="d-inline-block" tabindex="0" data-toggle="popover" data-trigger="hover" data-placement="top" data-html="true" title="@popOverTitle" data-content="@popOverContent">
+                        <a id="rinnova-anchor" class="btn btn-sm btn-warning buttonWidth @disabledCss" style="pointer-events: @pointerType;" href="@($"{Url.Action("Rinnova", "Accordi", new { role = Context.Request.Query["role"], id = Model.Id, revisioneAccordo = false })}")">Rinnovo</a>
+                    </span>
+                }
+
+            </div>
+        </div>
+    </div>
+    <div class="col:empty">
+        <div class="row ml-auto">
+            <div class="col">
+                <!-- Se Accordo è nello stato Sottoscritto ed utente, possibiltà di revisionare l'accordo'. -->
+                @if (Model.Stato == StatoAccordo.Sottoscritto && Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()))
+                {
+
+                    string popOverTitle = "Revisione Accordo", popOverContent = "Verrà creato un nuovo accordo in BOZZA a partire dal quello corrente ed alla sua sottoscrizione il precedente accordo verrà CHIUSO PER REVISIONE ACCORDO", pointerType = "all";
+                    string disabledCss = string.Empty;
+
+                    <!-- Se per l'accordo è stato già richiesta una revisione, aggiorna popover -->
+                    if (Model.RevisioneAccordo)
+                    {
+                        popOverTitle = "Impossibile revisionare";
+                        popOverContent = "Non è possibile revisionare perché per questo accordo è stata già richiesta una revisione.";
+                        disabledCss = "disabled";
+                        pointerType = "none";
+                    }
+
+                    <!-- Se l'accordo è scaduto (DataFine < DataCorrente) non è possibile revisionare-->
+                    if(Model.DataFineUtc.HasValue && Model.DataFineUtc.Value.Date < System.DateTime.Now.Date)
+                    {
+                        popOverTitle = "Impossibile revisionare";
+                        popOverContent = "Non è possibile revisionare perché l'accordo risulta scaduto.'";
+                        disabledCss = "disabled";
+                        pointerType = "none";
+                    }
+
+                    <span class="d-inline-block" tabindex="0" data-toggle="popover" data-trigger="hover" data-placement="top" data-html="true" title="@popOverTitle" data-content="@popOverContent">
+                        <a id="rinnova-anchor" class="btn btn-sm btn-warning buttonWidth @disabledCss" style="pointer-events: @pointerType;" href="@($"{Url.Action("Rinnova", "Accordi", new { role = Context.Request.Query["role"], id = Model.Id, revisioneAccordo = true })}")">Revisione</a>
+                    </span>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col:empty">
+        <div class="row ml-auto">
+            <div class="col">
+                @if (Model.StoricoStato != null)
+                {
+                    <button type="button" class="btn btn-sm btn-light buttonWidth" data-toggle="modal" data-target="#storico-modal">Storico</button>
+                }
+                @if (Model.Stato == StatoAccordo.Bozza && Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()))
+                {
+                    <a href="@Url.Action("Delete", "Accordi", new { id = @Model.Id, role = @Context.Request.Query["role"] })" class="btn btn-sm btn-danger buttonWidth" onclick="return DisplaySpinner();">Elimina</a>
+                }
+                @if (!Guid.Empty.Equals(Model.ParentId))
+                {
+                    <a href="@Url.Action("Details", "Accordi", new { id = Model.ParentId, role = Context.Request.Query["role"] })" class="btn btn-sm btn-light buttonWidth" role="button">Accordo padre</a>
+                    <button type="button" class="btn btn-sm btn-primary buttonWidth" data-toggle="modal" data-target="#differenza-accordi-modal" id="differenza-accordi-input" data-id="@Model.Id" data-parent-id="@Model.ParentId">Differenze con precedente</button>
+                }
+                @if (!Guid.Empty.Equals(Model.ChildId))
+                {
+                    <a href="@Url.Action("Details", "Accordi", new { id = Model.ChildId, role = Context.Request.Query["role"] })" class="btn btn-sm btn-light buttonWidth" role="button">Accordo figlio</a>
+                }
+
+                <!-- Stato invio informazioni a sistema esterno -->
+                @if (Model.Transmission != null && ZucchettiSettings.Value.Valid)
+                {
+                    <button type="button" class="btn btn-sm btn-light buttonWidth" data-toggle="modal" data-target="#transmission-status-modal">Stato invio</button>
+                }
+
+                <!-- La valutazione di accordi sottoscritti, recesso e conclusi è abilitata da 20gg prima della data fine accordo in poi -->
+                <!-- la valutazione di accordi in recesso pianificato è abilitata da 20gg prima della data pianificata di recesso in poi -->
+                @if (
+                        @*Condizioni comuni*@
+                        Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()) &&
+                        Model.DataNotaDipendente == null &&
+                        @*Sottoscritto - Recesso - Concluso*@
+                        (
+                            (Model.Stato == StatoAccordo.Sottoscritto || 
+                            Model.Stato == StatoAccordo.Recesso || 
+                            Model.Stato == StatoAccordo.AccordoConcluso) &&
+                            Model.DataFineUtc.HasValue && 
+                            Model.DataFineUtc.Value.AddDays(-20) <= DateTime.UtcNow
+                        ) ||
+                        @*Recesso Pianificato*@
+                        (
+                            Model.Stato == StatoAccordo.RecessoPianificato &&
+                            Model.DataRecesso.HasValue &&
+                            Model.DataRecesso.Value.AddDays(-20) <= DateTime.UtcNow
+                        )                    
+                    )                    
+                {
+                    <a class="btn btn-sm btn-success" href="@Url.Action("Details", "Valutazioni", new { id = Model.Id, role = Context.Request.Query["role"] })">Richiedi Valutazione</a>
+                }
+
+                <!-- La valutazione di accordi sottoscritti, recesso e conclusi è abilitata da 20gg prima della data fine accordo in poi -->
+                <!-- la valutazione di accordi in recesso pianificato è abilitata da 20gg prima della data pianificata di recesso in poi -->
+                @if (
+                        @*Condizioni comuni*@
+                        Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()) &&
+                        Model.ResponsabileAccordo.Id.Equals(User.GetUserId()) &&
+                        Model.DataNotaDipendente != null &&
+                        Model.DataNotaDirigente == null &&
+                        @*Sottoscritto - Recesso - Concluso*@
+                        (
+                            (Model.Stato == StatoAccordo.Sottoscritto || 
+                            Model.Stato == StatoAccordo.Recesso || 
+                            Model.Stato == StatoAccordo.AccordoConcluso) &&                    
+                            Model.DataFineUtc.HasValue && 
+                            Model.DataFineUtc.Value.AddDays(-20) <= DateTime.UtcNow
+                        ) ||
+                        @*Recesso Pianificato*@
+                        (
+                            Model.Stato == StatoAccordo.RecessoPianificato &&
+                            Model.DataRecesso.HasValue &&
+                            Model.DataRecesso.Value.AddDays(-20) <= DateTime.UtcNow
+                        )
+                    )
+                {
+                    <a class="btn btn-sm btn-danger" href="@Url.Action("Valutation", "Valutazioni", new { id = Model.Id, role = Context.Request.Query["role"] })">Valuta Accordo</a>
+                }
+            </div>
+        </div>
+    </div>
+     <div class="col:empty">
+        <div class="row ml-auto">
+            <div class="col">
+                <a href="@Url.Action("Index", "Accordi", new { role = Context.Request.Query["role"] })" class="btn btn-sm btn-light buttonWidth" role="button">Indietro</a>
+
+                 <!-- Il pulsante salva è abilitato solo se si è un Utente chiaramente autore dell'accordo e se l'accordo è nello stato di
+                    Bozza
+                    RichiestaModificaCI
+                    RichiestaModificaCS
+                    RichiestaModificaRA
+                    Se le date dell'accordo sono da ripianificare
+                    Altresì è abilitato se si è un referente interno o uno della segreteria tecnica ma in questo caso è permesso
+                    modificare solo i campi di interesse-->
+                @if(
+                   (Model.Dipendente.Id.Equals(User.GetUserId())
+                   &&
+                   (Model.Stato == StatoAccordo.Bozza ||
+                   Model.Stato == StatoAccordo.RichiestaModificaCI ||
+                   Model.Stato == StatoAccordo.RichiestaModificaCS ||
+                   Model.Stato == StatoAccordo.RichiestaModificaRA ||
+                   Model.Ripianificare))
+                   ||
+                   ((Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_SEGRETERIA_TECNICA.ToDescriptionString()) ||
+                   Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_REFERENTE_INTERNO.ToDescriptionString()))
+                   &&
+                   (Model.Stato == StatoAccordo.Bozza ||
+                   Model.Stato == StatoAccordo.RichiestaModificaCI ||
+                   Model.Stato == StatoAccordo.RichiestaModificaCS ||
+                   Model.Stato == StatoAccordo.RichiestaModificaRA ||
+                   Model.Stato == StatoAccordo.InAttesaValutazioneSegreteriaTecnica))
+                   )
+                {
+                    <button type="button" id="saveActionPartial" class="btn btn-sm btn-primary buttonWidth" onclick="return DisplaySpinner();">Salva</button>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col:empty">
+        <form asp-action="AprovaDeroga" asp-controller="Approvals" id="approval-form" asp-route-role="@Context.Request.Query["role"]">
+            @Html.HiddenFor(a => a.Id)
+            <div class="row ml-auto">
+                <div class="col">
+                    <!-- Azione riservata alla Segr. Tecnica per accordi nello stato "InAttesaValutazioneSegreteriaTecnica" -->
+                    @if (Model.Stato == StatoAccordo.InAttesaValutazioneSegreteriaTecnica  &&
+                            Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_SEGRETERIA_TECNICA.ToDescriptionString()))
+                    {
+                        string popOverTitle = "Approva Deroga", popOverContent = "Approvando la deroga l'accordo verrà trasmesso in approvazione al responsabile.", pointerType = "all";
+
+                        <span class="d-inline-block" tabindex="0" data-toggle="popover" data-trigger="hover" data-placement="top" data-html="true" title="@popOverTitle" data-content="@popOverContent">
+                            <button type="submit" class="btn btn-sm btn-success buttonWidth" style="pointer-events: @pointerType;">Approva Deroga</button>
+                        </span>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col:empty">
+        <form asp-action="RifiutaDeroga" asp-controller="Approvals" id="approval-form" asp-route-role="@Context.Request.Query["role"]">
+            @Html.HiddenFor(a => a.Id)
+            <div class="row ml-auto">
+                <div class="col">
+                    <!-- Azione riservata alla Segr. Tecnica per accordi nello stato "InAttesaValutazioneSegreteriaTecnica" -->
+                    @if (Model.Stato == StatoAccordo.InAttesaValutazioneSegreteriaTecnica &&
+                    Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_SEGRETERIA_TECNICA.ToDescriptionString()))
+                    {
+                        string popOverTitle = "Rifiuta Deroga", popOverContent = "Rifiutando la deroga l'accordo verrà riportato in BOZZA e verrà annullata la pianificazione.", pointerType = "all";
+
+                        <span class="d-inline-block" tabindex="0" data-toggle="popover" data-trigger="hover" data-placement="top" data-html="true" title="@popOverTitle" data-content="@popOverContent">
+                            <button type="submit" class="btn btn-sm btn-danger buttonWidth" style="pointer-events: @pointerType;">Rifiuta Deroga</button>
+                        </span>
+                    }
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

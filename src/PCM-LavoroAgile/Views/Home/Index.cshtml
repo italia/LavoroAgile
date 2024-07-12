@@ -1,0 +1,390 @@
+﻿@model AccordoHeaderViewModel
+@inject IOptionsSnapshot<ZucchettiServiceSettings> ZucchettiSettings
+@{
+    ViewData["Title"] = "Home Page";
+    IEnumerable<System.Security.Claims.Claim> roles = User.Claims.Where(c => c.Type.StartsWith(RoleAndKeysClaimEnum.KEY_CLAIM_GENERIC.ToDescriptionString()));
+}
+
+@if (User.IsInRole(RoleAndKeysClaimEnum.ADMINISTRATOR.ToDescriptionString()))
+{
+    <h1 class="primary-color d-flex justify-content-center m-5"><strong>Amministrazione - PCM Lavoro Agile</strong></h1>
+}
+else
+{
+    <h1 class="primary-color d-flex justify-content-center m-5"><strong>Home Page - PCM Lavoro Agile</strong></h1>
+    <div class="row">
+        <div class="col">
+            <form>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <div class="bootstrap-select-wrapper">
+                            <label>Ruolo con cui operare.</label>
+                            <select id="ddlRuoli" name="ddlRuoli" class="form-control" asp-items='new SelectList(roles, "Type", "Value")'></select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="dashboard" class="row" data-show-if="@RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()">
+        <div class="col-md-4">
+            <!-- Ricerca Accordi -->
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="categoryicon-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-search"></use>
+                                <span id="badge_@RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()" class="badge badge-light"></span>
+                            </svg>
+                        </div>
+                        <a id="goToListaAccordi_@RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()" href="@($"{Url.Action("Index", "Accordi")}?role={roles.First().Type}")">
+                            <h5 class="card-title">Ricerca accordi</h5>
+                        </a>
+                        <p class="card-text">Consente di ricercare gli accordi stipulati.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (User.Claims.FirstOrDefault(c => c.Type == RoleAndKeysClaimEnum.INTERDICTED_USER.ToDescriptionString())?.Value.Equals(bool.FalseString, StringComparison.OrdinalIgnoreCase) ?? true)
+        {
+            <div class="col-md-4">
+                <!-- Nuovo accordo/dettaglio accordo. -->
+                <div class="card-wrapper">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="categoryicon-top">
+                                <!-- Alert giallo se è richiesta una azione da parte dell'utente / Foglio se può procedere con visualizzazione/creazione accordo-->
+                                @{
+                                    var icon = "it-file";
+                                    var iconClass = "";
+
+                                    if (Model?.Stato == StatoAccordo.RichiestaModificaCI || Model?.Stato == StatoAccordo.RichiestaModificaCS || Model?.Stato == StatoAccordo.RichiestaModificaRA || Model?.Stato == StatoAccordo.DaSottoscrivereP || Model?.Stato == StatoAccordo.Bozza)
+                                    {
+                                        icon = "it-warning-circle";
+                                        iconClass = "icon-warning";
+                                    }
+                                }
+                                <svg class="icon @iconClass">
+                                    <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#@icon"></use>
+                                </svg>
+                            </div>
+                            <a href="@(Model != null ? $"{Url.Action("Details", "Accordi", new { id = Model.Id })}?role={roles.First().Type}" : $"{Url.Action("Create", "Accordi")}?role={roles.First().Type}")">
+                                <h5 class="card-title">@(Model != null ? $"Dettaglio accordo" : "Nuovo accordo")</h5>
+                            </a>
+                            <p class="card-text">Consente di @(Model != null ? $"visualizzare l'accordo corrente" : "creare un nuovo accordo").</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (Model?.Transmission != null && ZucchettiSettings.Value.Valid)
+            {
+                <div class="col-md-4">
+                    <!-- Stato tramissione accordo in corso. -->
+                    <div class="card-wrapper">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="categoryicon-top">
+                                    <svg class="icon @iconClass">
+                                        <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-upload"></use>
+                                    </svg>
+                                </div>
+                                <a href="#" class="disable-form">
+                                    <h5 class="card-title">Stato trasmissione ZTimesheet</h5>
+                                </a>
+                                <p class="card-text">
+                                    <partial name="_StatoInvioPartial" model="Model.Transmission" />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model != null && !Guid.Empty.Equals(Model.ChildId))
+            {
+                <div class="col-md-4">
+                    <!-- Dettaglio accordo in rinnovo. -->
+                    <div class="card-wrapper">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="categoryicon-top">
+                                    <svg class="icon @iconClass">
+                                        <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-file"></use>
+                                    </svg>
+                                </div>
+                                <a href="@($"{Url.Action("Details", "Accordi", new { id = Model.ChildId })}?role={roles.First().Type}")">
+                                    <h5 class="card-title">Dettaglio accordo di rinnovo</h5>
+                                </a>
+                                <p class="card-text">Consente di visualizzare il dettaglio del rinnovo dell'accordo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        }
+        <!-- Accordo attivo, consente rendicontazione -->
+        @*@if (Model != null)
+            {
+                <div class="col-md-4">
+                    <div class="card-wrapper">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="categoryicon-top">
+                                    <svg class="icon">
+                                        <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-list"></use>
+                                    </svg>
+                                </div>
+                                <a href="#">
+                                    <h5 class="card-title">Rendiconta</h5>
+                                </a>
+                                <p class="card-text">Consente di rendicontare le giornate.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }*@
+    </div>
+
+    <div id="dashboard" class="row" data-show-if="@RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()">
+        <!-- Ricerca Accordi -->
+        <div class="col-md-4">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="categoryicon-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-search"></use>
+                                <span id="badge_@RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()" class="badge badge-light"></span>
+                            </svg>
+                        </div>
+                        <a id="goToListaAccordi_@RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()" href="@($"{Url.Action("Index", "Accordi")}?role={roles.First().Type}")">
+                            <h5 class="card-title">Ricerca accordi</h5>
+                        </a>
+                        <p class="card-text">Consente di ricercare gli accordi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Cruscotti Monitoraggio -->
+        <div class="col-md-4">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="categoryicon-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-presentation"></use>
+                                <span id="badge_@RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()" class="badge badge-light"></span>
+                            </svg>
+                        </div>
+                        <a id="goToCruscotto_@RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()" href="@($"{Url.Action("Index", "Cruscotto")}?role={RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()}")">
+                            <h5 class="card-title">Cruscotti di Monitoraggio</h5>
+                        </a>
+                        <p class="card-text">Riepilogo informazioni degli accordi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Valutazioni Accordi-->
+        <div class="col-md-4">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="categoryicon-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-pencil"></use>
+                                <span id="badge_valutazioni_@RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()" class="badge badge-light"></span>
+                            </svg>
+                        </div>
+                        <a id="goToListaAccordiDaValutare_@RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()" href="@($"{Url.Action("Index", "Valutazioni")}?role={RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString()}")">
+                            <h5 class="card-title">Valutazione accordi</h5>
+                        </a>
+                        <p class="card-text">Consente di valutare l'esito degli accordi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard" class="row" data-show-if="@RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_STRUTTURA.ToDescriptionString()">
+        <!-- Ricerca Accordi -->
+        <div class="col-md-4">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="categoryicon-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-search"></use>
+                                <span id="badge_@RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_STRUTTURA.ToDescriptionString()" class="badge badge-light"></span>
+                            </svg>
+                        </div>
+                        <a id="goToListaAccordi_@RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_STRUTTURA.ToDescriptionString()" href="@($"{Url.Action("Index", "Accordi")}?role={roles.First().Type}")">
+                            <h5 class="card-title">Ricerca accordi</h5>
+                        </a>
+                        <p class="card-text">Consente di ricercare gli accordi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Cruscotti Monitoraggio -->
+        <div class="col-md-4">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="categoryicon-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-presentation"></use>
+                                <span id="badge_@RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_STRUTTURA.ToDescriptionString()" class="badge badge-light"></span>
+                            </svg>
+                        </div>
+                        <a id="goToCruscotto_@RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_STRUTTURA.ToDescriptionString()" href="@($"{Url.Action("Index", "Cruscotto")}?role={RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_STRUTTURA.ToDescriptionString()}")">
+                            <h5 class="card-title">Cruscotti di Monitoraggio</h5>
+                        </a>
+                        <p class="card-text">Riepilogo informazioni degli accordi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard" class="row" data-show-if="@RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_INTERMEDIO.ToDescriptionString()">
+        <!-- Ricerca Accordi -->
+        <div class="col-md-4">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="categoryicon-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-search"></use>
+                                <span id="badge_@RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_INTERMEDIO.ToDescriptionString()" class="badge badge-light"></span>
+                            </svg>
+                        </div>
+                        <a id="goToListaAccordi_@RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_INTERMEDIO.ToDescriptionString()" href="@($"{Url.Action("Index", "Accordi")}?role={roles.First().Type}")">
+                            <h5 class="card-title">Ricerca accordi</h5>
+                        </a>
+                        <p class="card-text">Consente di ricercare gli accordi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Cruscotti Monitoraggio -->
+        <div class="col-md-4">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="categoryicon-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-presentation"></use>
+                                <span id="badge_@RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_INTERMEDIO.ToDescriptionString()" class="badge badge-light"></span>
+                            </svg>
+                        </div>
+                        <a id="goToCruscotto_@RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_INTERMEDIO.ToDescriptionString()" href="@($"{Url.Action("Index", "Cruscotto")}?role={RoleAndKeysClaimEnum.KEY_CLAIM_CAPO_INTERMEDIO.ToDescriptionString()}")">
+                            <h5 class="card-title">Cruscotti di Monitoraggio</h5>
+                        </a>
+                        <p class="card-text">Riepilogo informazioni degli accordi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard" class="row" data-show-if="@RoleAndKeysClaimEnum.KEY_CLAIM_REFERENTE_INTERNO.ToDescriptionString()">
+        <!-- Ricerca Accordi -->
+        <div class="col-md-4">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="categoryicon-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-search"></use>
+                            </svg>
+                        </div>
+                        <a id="goToListaAccordi_@RoleAndKeysClaimEnum.KEY_CLAIM_REFERENTE_INTERNO.ToDescriptionString()" href="@($"{Url.Action("Index", "Accordi")}?role={roles.First().Type}")">
+                            <h5 class="card-title">Ricerca accordi</h5>
+                        </a>
+                        <p class="card-text">Consente di ricercare gli accordi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Cruscotti Monitoraggio -->
+        <div class="col-md-4">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="categoryicon-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-presentation"></use>
+                            </svg>
+                        </div>
+                        <a id="goToCruscotto_@RoleAndKeysClaimEnum.KEY_CLAIM_REFERENTE_INTERNO.ToDescriptionString()" href="@($"{Url.Action("Index", "Cruscotto")}?role={RoleAndKeysClaimEnum.KEY_CLAIM_REFERENTE_INTERNO.ToDescriptionString()}")">
+                            <h5 class="card-title">Cruscotti di Monitoraggio</h5>
+                        </a>
+                        <p class="card-text">Riepilogo informazioni degli accordi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard" class="row" data-show-if="@RoleAndKeysClaimEnum.KEY_CLAIM_SEGRETERIA_TECNICA.ToDescriptionString()">
+        <!-- Ricerca Accordi -->
+        <div class="col-md-4">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="categoryicon-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-search"></use>
+                            </svg>
+                        </div>
+                        <a id="goToListaAccordi_@RoleAndKeysClaimEnum.KEY_CLAIM_SEGRETERIA_TECNICA.ToDescriptionString()" href="@($"{Url.Action("Index", "Accordi")}?role={roles.First().Type}")">
+                            <h5 class="card-title">Ricerca accordi</h5>
+                        </a>
+                        <p class="card-text">Consente di ricercare gli accordi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Cruscotti Monitoraggio -->
+        <div class="col-md-4">
+            <div class="card-wrapper">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="categoryicon-top">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-presentation"></use>
+                            </svg>
+                        </div>
+                        <a id="goToCruscotto_@RoleAndKeysClaimEnum.KEY_CLAIM_SEGRETERIA_TECNICA.ToDescriptionString()" href="@($"{Url.Action("Index", "Cruscotto")}?role={RoleAndKeysClaimEnum.KEY_CLAIM_SEGRETERIA_TECNICA.ToDescriptionString()}")">
+                            <h5 class="card-title">Cruscotti di Monitoraggio</h5>
+                        </a>
+                        <p class="card-text">Riepilogo informazioni degli accordi.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+
+        //Al caricamento della pagine imposta di default il ruolo UTENTE che sicuramente è sempre presente e fa scattare il change del ruolo
+        $(document).ready(function () {
+            $("#ddlRuoli").val("@RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()").change();
+        });
+
+        //Al change del ruolo, mostra le card appropriate per l'utente ed aggiorna il link per l'apertura della pagina di ricerca accordi
+        $("#ddlRuoli").change(function () {
+
+            ShowCardForRole(this.value, '@Url.Action("Index", "Accordi")');
+
+            GetToDoForRole(this.value, '@Url.Action("GetToDoForRole", "Home")');
+
+            GetToDoValutazioni(this.value, '@Url.Action("GetToDoValutazioni", "Home")');
+        });
+
+    </script>
+}

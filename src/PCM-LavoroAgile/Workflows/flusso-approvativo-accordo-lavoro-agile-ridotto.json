@@ -1,0 +1,1282 @@
+{
+  "$id": "1",
+  "definitionId": "3d112e65c336493986a666d6df04b39b",
+  "versionId": "f3bc5e2d190d46788fdd57d2e76321ec",
+  "name": "Flusso approvativo accordo lavoro agile ridotto",
+  "displayName": "Flusso approvativo accordo lavoro agile ridotto",
+  "version": 13,
+  "variables": {
+    "$id": "2",
+    "data": {
+      "detailsUrl": "http://lavoroagile.pcm.it/accordi/details/",
+      "sender": "no-reply@governo.it"
+    }
+  },
+  "customAttributes": {
+    "$id": "3",
+    "data": {}
+  },
+  "isSingleton": false,
+  "persistenceBehavior": "WorkflowBurst",
+  "deleteCompletedInstances": false,
+  "isPublished": true,
+  "isLatest": true,
+  "tag": "ApprovazioneLavoroAgileRidotto",
+  "activities": [
+    {
+      "$id": "4",
+      "activityId": "8aa93c26-718e-45ea-b236-75238edd6fc4",
+      "type": "GetAccordoActivity",
+      "name": "GetAccordo",
+      "displayName": "Recupera dettaglio accordo",
+      "description": "Recupera il dettaglio dell'accordo utilizzando come chiave il correlationId",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "5",
+          "name": "IdAccordo",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "6",
+            "JavaScript": "correlationId"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "7",
+      "activityId": "2ada042e-f49d-4d7e-8f9e-b1869c3a21f1",
+      "type": "RunJavaScript",
+      "displayName": "Analizza struttura",
+      "description": "Analizza la struttura e crea un array con l'elenco degli approvatori.\nPer ogni approvatore, vengono memorizzati: la uid, il ruolo (RA, CI, CS) e se è la stessa persona che ha approvato nello step precedente (necessario per l'approvazione automatica)",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "8",
+          "name": "Script",
+          "syntax": "Literal",
+          "expressions": {
+            "$id": "9",
+            "Literal": "// Definisce oggetto per memorizzare le informazioni sullo step approvativo\r\nfunction stepApprovativo(approvatore, ruolo, stessoApprovatore, approvatoriPrecedenti) {\r\n    this.approvatore = approvatore;\r\n    this.ruolo = ruolo;\r\n    this.stessoApprovatore = stessoApprovatore;\r\n    this.approvatoriPrecedenti = JSON.stringify(approvatoriPrecedenti);\r\n}\r\n\r\n// Elenco degli approvatori\r\nlet steps = [];\r\n\r\n// Il primo approvatore è il responsabile dell'accordo.\r\nsteps.push(new stepApprovativo(activities.GetAccordo.Output().ResponsabileAccordo.Email, \"RA\", false, []));\r\n\r\n// Salva la variabile.\r\nsetVariable('stepApprovativi', steps);"
+          }
+        },
+        {
+          "$id": "10",
+          "name": "PossibleOutcomes",
+          "expressions": {
+            "$id": "11"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "12",
+      "activityId": "3413383d-f635-43cf-92ce-89db42e47068",
+      "type": "ForEach",
+      "name": "Approvers",
+      "displayName": "Scorri gli approvatori",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "13",
+          "name": "Items",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "14",
+            "JavaScript": "getVariable('stepApprovativi');"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "15",
+      "activityId": "17730cc6-3238-4603-b96e-f541a67f6545",
+      "type": "UpdateStatoAccordoActivity",
+      "displayName": "Aggiorna stato accordo a DaApprovare...",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "16",
+          "name": "IdAccordo",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "17",
+            "JavaScript": "correlationId"
+          }
+        },
+        {
+          "$id": "18",
+          "name": "Stato",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "19",
+            "JavaScript": "\"DaApprovare\" + input.ruolo"
+          }
+        },
+        {
+          "$id": "20",
+          "name": "Note",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "21",
+            "JavaScript": "let commento = \"\";\r\n// Se l'approvatore è lo stesso dello step precedente e non ci sono commenti da parte del\r\n// dirigente, scrive \"Approvato automaticamente\"\r\nif(input.stessoApprovatore.toString().toLowerCase() == true.toString() && getVariable('notaApprovazione') == undefined) {\r\n    commento = \"Approvato automaticamente \";\r\n}\r\nif(getVariable('notaApprovazione') != undefined) {\r\n    commento += getVariable('notaApprovazione').toString();\r\n    setVariable('notaApprovazione', undefined);\r\n}\r\n\r\nreturn commento;"
+          }
+        },
+        {
+          "$id": "22",
+          "name": "Autore",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "23",
+            "JavaScript": "let autore = \"\";\r\nif(getVariable('autoreApprovazione') != undefined) {\r\n    autore += getVariable('autoreApprovazione').toString();\r\n}\r\n\r\nreturn autore;"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "24",
+      "activityId": "582a31e7-6607-4b23-a692-ffcbaa99028c",
+      "type": "If",
+      "displayName": "Se approvatore differente",
+      "description": "Nel caso in cui l'approvatore sia lo stesso dello step precedente, procede con approvazione automatica, altrimenti procede con attesa approvazione.",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "25",
+          "name": "Condition",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "26",
+            "JavaScript": "activities.Approvers.Output().stessoApprovatore.toString().toLowerCase() == false.toString()"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "27",
+      "activityId": "5a5ee3be-54c2-47b9-868a-e8023eaa8317",
+      "type": "Fork",
+      "displayName": "Approva/Rifiuta/Integra",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "28",
+          "name": "Branches",
+          "expressions": {
+            "$id": "29",
+            "Json": "[\"Approvato\",\"Rifiutato\",\"Richiesta di modifica\"]"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "30",
+      "activityId": "4567192b-2d58-4d69-bfae-1b94aef8547c",
+      "type": "SignalReceived",
+      "name": "ApprovatoSignal",
+      "displayName": "Approvato",
+      "description": "Attende il segnale di rifiuto inviato da uno dei tre dirigenti (ApprovatoRA, ApprovatoCI, ApprovatoCS)",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "31",
+          "name": "Signal",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "32",
+            "Literal": "Approvato",
+            "JavaScript": "\"Approvato\" + activities.Approvers.Output().ruolo.toString()"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "33",
+      "activityId": "d061061a-2ab0-4051-a6e7-cac9aab5d5a8",
+      "type": "SignalReceived",
+      "name": "RifiutatoSignal",
+      "displayName": "Rifiutato",
+      "description": "Attende il segnale di rifiuto inviato da uno dei tre dirigenti (RifiutatoRA, RifiutatoCI, RifiutatoCS)",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "34",
+          "name": "Signal",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "35",
+            "Literal": "Rifiutato",
+            "JavaScript": "\"Rifiutato\" + activities.Approvers.Output().ruolo.toString()"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "36",
+      "activityId": "9ebda7f7-4a90-4b75-89ff-61c7e94a3d87",
+      "type": "SignalReceived",
+      "name": "RichiediModificaSignal",
+      "displayName": "Richiesta modifica",
+      "description": "Attende il segnale di richiesta modifica inviato da uno dei tre dirigenti (RichiestaModifiche)",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "37",
+          "name": "Signal",
+          "expressions": {
+            "$id": "38",
+            "Literal": "RichiestaModifiche"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "39",
+      "activityId": "efcc70a9-cfb7-4deb-b23e-f98dc00ba6fa",
+      "type": "SetVariable",
+      "displayName": "Salva nota",
+      "description": "Salva la nota di approvazione inviata dal dirigente, da inserire nel cambio di stato.",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "40",
+          "name": "VariableName",
+          "expressions": {
+            "$id": "41",
+            "Literal": "notaApprovazione"
+          }
+        },
+        {
+          "$id": "42",
+          "name": "Value",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "43",
+            "JavaScript": "activities.ApprovatoSignal.SignalInput()?.toString()"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "44",
+      "activityId": "57f34f82-67cd-414a-9ed9-300acdae7aef",
+      "type": "UpdateStatoAccordoActivity",
+      "displayName": "Aggiorna stato accordo a RichiestaModifica",
+      "description": "Passa lo stato a richiesta modifica (RichiestaModificaRA, RichiestaModificaCI, RichiestaModificaCS) salvando l'eventuale nota inviata dal dirigente.",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "45",
+          "name": "IdAccordo",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "46",
+            "JavaScript": "correlationId"
+          }
+        },
+        {
+          "$id": "47",
+          "name": "Stato",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "48",
+            "JavaScript": "\"RichiestaModifica\" + activities.Approvers.Output().ruolo.toString()"
+          }
+        },
+        {
+          "$id": "49",
+          "name": "Note",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "50",
+            "JavaScript": "activities.RichiediModificaSignal.SignalInput()?.toString()"
+          }
+        },
+        {
+          "$id": "51",
+          "name": "Autore",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "52",
+            "JavaScript": "let autore = \"\";\r\nif(getVariable('approvatoreDescription') != undefined) {\r\n    autore = getVariable('approvatoreDescription');\r\n}\r\nreturn autore;"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "53",
+      "activityId": "6485ed44-318f-428f-88ed-4e39a8d95a09",
+      "type": "Finish",
+      "displayName": "Finish",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "54",
+          "name": "ActivityOutput",
+          "expressions": {
+            "$id": "55"
+          }
+        },
+        {
+          "$id": "56",
+          "name": "OutcomeNames",
+          "expressions": {
+            "$id": "57"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "58",
+      "activityId": "0b6dc5e1-c308-4c22-911a-35e22a403b1f",
+      "type": "UpdateStatoAccordoActivity",
+      "displayName": "Aggiorna stato accordo a Rifiutato...",
+      "description": "Aggiorna lo stato a rifiutato (RifiutataRA, RifiutataCI, RifiutataCS) ed inserisce l'eventuale nota.",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "59",
+          "name": "IdAccordo",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "60",
+            "JavaScript": "correlationId"
+          }
+        },
+        {
+          "$id": "61",
+          "name": "Stato",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "62",
+            "JavaScript": "\"Rifiutata\" + activities.Approvers.Output().ruolo.toString()"
+          }
+        },
+        {
+          "$id": "63",
+          "name": "Note",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "64",
+            "JavaScript": "activities.RifiutatoSignal.SignalInput()?.toString()"
+          }
+        },
+        {
+          "$id": "65",
+          "name": "Autore",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "66",
+            "JavaScript": "let autore = \"\";\r\nif(getVariable('approvatoreDescription') != undefined) {\r\n    autore = getVariable('approvatoreDescription');\r\n}\r\nreturn autore;"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "67",
+      "activityId": "8bb9374f-757a-40c8-bd75-652c73da440a",
+      "type": "Finish",
+      "displayName": "Finish",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "68",
+          "name": "ActivityOutput",
+          "expressions": {
+            "$id": "69"
+          }
+        },
+        {
+          "$id": "70",
+          "name": "OutcomeNames",
+          "expressions": {
+            "$id": "71"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "72",
+      "activityId": "e5d1c746-8818-4adf-b4d2-0d37e28436cb",
+      "type": "SetVariable",
+      "displayName": "Salva nome approvatore",
+      "description": "Salva nome e cognome dell'approvatore",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "73",
+          "name": "VariableName",
+          "expressions": {
+            "$id": "74",
+            "Literal": "autoreApprovazione"
+          }
+        },
+        {
+          "$id": "75",
+          "name": "Value",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "76",
+            "JavaScript": "let autore = \"\";\r\nif(getVariable('approvatoreDescription') != undefined) {\r\n    autore = getVariable('approvatoreDescription');\r\n    setVariable('approvatoreDescription', undefined);\r\n}\r\nreturn autore;"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "77",
+      "activityId": "91ba2887-fc03-4ff1-a7b7-5e8709521918",
+      "type": "SetVariable",
+      "displayName": "Salva approvatore",
+      "description": "Salva nome e cognome dell'approvatore",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "78",
+          "name": "VariableName",
+          "expressions": {
+            "$id": "79",
+            "Literal": "approvatoreDescription"
+          }
+        },
+        {
+          "$id": "80",
+          "name": "Value",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "81",
+            "JavaScript": "// Identifica l'autore a seconda del ruolo\r\nswitch(activities.Approvers.Output().ruolo.toString()) {\r\n    case 'RA': // Responsabile accordo\r\n        return activities.GetAccordo.Output().ResponsabileAccordo.NomeCognome;\r\n    case 'CI': // Capo intermedio\r\n        return activities.GetAccordo.Output().CapoIntermedio.NomeCognome;\r\n    case 'CS': // Capo struttura\r\n        return activities.GetAccordo.Output().CapoStruttura.NomeCognome;\r\n}"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "82",
+      "activityId": "c4e0d9e3-aaa6-4af8-9386-477facfd3045",
+      "type": "SendMailActivity",
+      "displayName": "Invia email Richiesta modifica",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "83",
+          "name": "From",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "84",
+            "JavaScript": "getVariable('sender')"
+          }
+        },
+        {
+          "$id": "85",
+          "name": "To",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "86",
+            "JavaScript": "[activities.GetAccordo.Output().Dipendente.Email]"
+          }
+        },
+        {
+          "$id": "87",
+          "name": "Subject",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "88",
+            "JavaScript": "\"[Lavoro Agile] Richiesta di integrazione dati accordo \" + activities.GetAccordo.Output().Dipendente.NomeCognome + \" (codice \" + activities.GetAccordo.Output().Codice + \")\""
+          }
+        },
+        {
+          "$id": "89",
+          "name": "Attachments",
+          "expressions": {
+            "$id": "90"
+          }
+        },
+        {
+          "$id": "91",
+          "name": "Body",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "92",
+            "JavaScript": "const greetings = (new Date()).getHours() < 12 ? \"Buongiorno\" : \"Buonasera\";\r\n\r\nlet body = greetings + \",<br/><br/>\" + getVariable('approvatoreDescription') + \" ha richiesto un'integrazione dati per il suo accordo\";\r\nif(activities.RichiediModificaSignal.SignalInput()?.toString()) {\r\n    body += \" con la seguente motivazione:<br /><br /><i>\" + activities.RichiediModificaSignal.SignalInput()?.toString() + \"</i>\";\r\n} else {\r\n    body += \".\";\r\n}\r\nbody += \"<br /><br />Può prendere visione dell'accordo cliccando <a href='\" + getVariable('detailsUrl') + activities.GetAccordo.Output().Id + \"?role=PCM_InternalOperativeRole_Utente'>qui</a>.<br/><br/>Cordiali saluti.\";\r\n\r\nreturn body;"
+          }
+        },
+        {
+          "$id": "93",
+          "name": "Cc",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "94",
+            "JavaScript": "// I destinatari in copia sono gli approvatori precedenti dello step attuale ed il responsabile\r\n// dello step attuale. \r\nlet receivers = JSON.parse(activities.Approvers.Output().approvatoriPrecedenti);\r\nreceivers.push(activities.Approvers.Output().approvatore);\r\n\r\nreturn receivers;"
+          }
+        },
+        {
+          "$id": "95",
+          "name": "Bcc",
+          "expressions": {
+            "$id": "96"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "97",
+      "activityId": "182e4755-77ea-43e4-918c-4e470940c5a2",
+      "type": "SendMailActivity",
+      "displayName": "Invia email Rifiutato",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "98",
+          "name": "From",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "99",
+            "JavaScript": "getVariable('sender')"
+          }
+        },
+        {
+          "$id": "100",
+          "name": "To",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "101",
+            "JavaScript": "[activities.GetAccordo.Output().Dipendente.Email]"
+          }
+        },
+        {
+          "$id": "102",
+          "name": "Subject",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "103",
+            "JavaScript": "\"[Lavoro Agile] Richiesta negata per l'accordo \" + activities.GetAccordo.Output().Dipendente.NomeCognome + \" (codice \" + activities.GetAccordo.Output().Codice + \")\""
+          }
+        },
+        {
+          "$id": "104",
+          "name": "Attachments",
+          "expressions": {
+            "$id": "105"
+          }
+        },
+        {
+          "$id": "106",
+          "name": "Body",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "107",
+            "JavaScript": "const greetings = (new Date()).getHours() < 12 ? \"Buongiorno\" : \"Buonasera\";\r\n\r\nlet body = greetings + \",<br/><br/>\" + getVariable('approvatoreDescription') + \" ha rifiutato il suo accordo\";\r\nif(activities.RifiutatoSignal.SignalInput()?.toString()) {\r\n    body += \" con la seguente motivazione:<br /><br /><i>\" + activities.RifiutatoSignal.SignalInput()?.toString() + \"</i>\";\r\n} else {\r\n    body += \".\";\r\n}\r\nbody += \"<br /><br /> Può prendere visione dell'accordo cliccando <a href='\" + getVariable('detailsUrl') + activities.GetAccordo.Output().Id + \"?role=PCM_InternalOperativeRole_Utente'>qui</a>.<br/><br/>Cordiali saluti.\";\r\n\r\nreturn body;"
+          }
+        },
+        {
+          "$id": "108",
+          "name": "Cc",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "109",
+            "JavaScript": "// I destinatari in copia sono gli approvatori precedenti dello step attuale \r\n// ed il responsabile dello step attuale. \r\nlet receivers = JSON.parse(activities.Approvers.Output().approvatoriPrecedenti);\r\nreceivers.push(activities.Approvers.Output().approvatore);\r\n\r\nreturn receivers;"
+          }
+        },
+        {
+          "$id": "110",
+          "name": "Bcc",
+          "expressions": {
+            "$id": "111"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "112",
+      "activityId": "3cf07c70-21b8-491d-a441-0c8dbaa48e95",
+      "type": "SendMailActivity",
+      "displayName": "Invia mail approvato",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "113",
+          "name": "From",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "114",
+            "JavaScript": "getVariable('sender')"
+          }
+        },
+        {
+          "$id": "115",
+          "name": "To",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "116",
+            "JavaScript": "[ activities.GetAccordo.Output().Dipendente.Email ]"
+          }
+        },
+        {
+          "$id": "117",
+          "name": "Subject",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "118",
+            "JavaScript": "\"[Lavoro Agile] Richiesta di accordo \" + activities.GetAccordo.Output().Dipendente.NomeCognome + \" (codice \" + activities.GetAccordo.Output().Codice + \")\" + \" approvata\""
+          }
+        },
+        {
+          "$id": "119",
+          "name": "Attachments",
+          "expressions": {
+            "$id": "120"
+          }
+        },
+        {
+          "$id": "121",
+          "name": "Body",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "122",
+            "JavaScript": "const greetings = (new Date()).getHours() < 12 ? \"Buongiorno\" : \"Buonasera\";\r\n\r\nlet body = greetings + \",<br/><br/>\" + getVariable('autoreApprovazione') + \" ha approvato il suo accordo\";\r\nif(activities.ApprovatoSignal.SignalInput()?.toString()) {\r\n    body += \" con la seguente motivazione:<br /><br /><i>\" + activities.ApprovatoSignal.SignalInput()?.toString() + \"</i>\";\r\n} else {\r\n    body += \".\";\r\n}\r\nbody += \"<br /><br /> Può prendere visione dell'accordo cliccando <a href='\" + getVariable('detailsUrl') + activities.GetAccordo.Output().Id + \"?role=PCM_InternalOperativeRole_Utente'>qui</a>.<br/><br/>Cordiali saluti.\";\r\n\r\nreturn body;"
+          }
+        },
+        {
+          "$id": "123",
+          "name": "Cc",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "124",
+            "JavaScript": "// I destinatari in copia sono gli approvatori precedenti dello step attuale ed il responsabile\r\n// dello step attuale. \r\nlet receivers = JSON.parse(activities.Approvers.Output().approvatoriPrecedenti);\r\nreceivers.push(activities.Approvers.Output().approvatore);\r\n\r\nreturn receivers;"
+          }
+        },
+        {
+          "$id": "125",
+          "name": "Bcc",
+          "expressions": {
+            "$id": "126"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "127",
+      "activityId": "c6844746-0009-4164-86d5-ff7ea2edca33",
+      "type": "UpdateStatoAccordoActivity",
+      "displayName": "Sottoscrizione automatica",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "128",
+          "name": "IdAccordo",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "129",
+            "JavaScript": "correlationId"
+          }
+        },
+        {
+          "$id": "130",
+          "name": "Stato",
+          "expressions": {
+            "$id": "131",
+            "Literal": "DaSottoscrivereRA"
+          }
+        },
+        {
+          "$id": "132",
+          "name": "Autore",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "133",
+            "JavaScript": "let autore = \"\";\r\nif(getVariable('autoreApprovazione') != undefined) {\r\n    autore += getVariable('autoreApprovazione').toString();\r\n}\r\n\r\nreturn autore;"
+          }
+        },
+        {
+          "$id": "134",
+          "name": "Note",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "135",
+            "JavaScript": "let commento = \"\";\r\nif(getVariable('notaApprovazione') != undefined) {\r\n    commento = \"Approvato automaticamente \" + getVariable('notaApprovazione').toString();\r\n}\r\n\r\nreturn commento;"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "136",
+      "activityId": "7ea410aa-a937-4f90-adf7-c2271bbd2648",
+      "type": "UpdateStatoAccordoActivity",
+      "displayName": "Da sottoscrivere P",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "137",
+          "name": "IdAccordo",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "138",
+            "JavaScript": "correlationId"
+          }
+        },
+        {
+          "$id": "139",
+          "name": "Stato",
+          "expressions": {
+            "$id": "140",
+            "Literal": "DaSottoscrivereP"
+          }
+        },
+        {
+          "$id": "141",
+          "name": "Autore",
+          "expressions": {
+            "$id": "142"
+          }
+        },
+        {
+          "$id": "143",
+          "name": "Note",
+          "expressions": {
+            "$id": "144"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "145",
+      "activityId": "742d6f33-bcd5-4993-a53d-fb8673068484",
+      "type": "SendMailActivity",
+      "displayName": "Invia mail sottoscrizione",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "146",
+          "name": "From",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "147",
+            "JavaScript": "getVariable('sender')"
+          }
+        },
+        {
+          "$id": "148",
+          "name": "To",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "149",
+            "JavaScript": "[activities.GetAccordo.Output().Dipendente.Email]"
+          }
+        },
+        {
+          "$id": "150",
+          "name": "Subject",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "151",
+            "Literal": "",
+            "JavaScript": "\"[Lavoro Agile] Richiesta sottoscrizione accordo \" + activities.GetAccordo.Output().Dipendente.NomeCognome + \" (codice \" + activities.GetAccordo.Output().Codice + \")\""
+          }
+        },
+        {
+          "$id": "152",
+          "name": "Attachments",
+          "expressions": {
+            "$id": "153"
+          }
+        },
+        {
+          "$id": "154",
+          "name": "Body",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "155",
+            "JavaScript": "const greetings = (new Date()).getHours() < 12 ? \"Buongiorno\" : \"Buonasera\";\r\n\r\nconst body = greetings + \",<br/><br/>l'accordo di Lavoro Agile è stato sottoscritto dal suo responsabile (\" + activities.GetAccordo.Output().ResponsabileAccordo.NomeCognome + \").<br /><br />E' richiesta la sua sottoscrizione affinchè l'accordo risulti definito.<br /><br />Per sottoscrivere e definire l'accordo cliccare <a href='\" + getVariable('detailsUrl') + activities.GetAccordo.Output().Id + \"?role=PCM_InternalOperativeRole_Utente'>qui</a>.<br/><br/>Cordiali saluti.\";\r\n\r\nreturn body;"
+          }
+        },
+        {
+          "$id": "156",
+          "name": "Cc",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "157",
+            "JavaScript": "// I destinatari in copia sono gli approvatori precedenti dello step attuale ed il responsabile\r\n// dello step attuale. \r\nlet receivers = JSON.parse(activities.Approvers.Output().approvatoriPrecedenti);\r\nreceivers.push(activities.Approvers.Output().approvatore);\r\n\r\nreturn receivers;"
+          }
+        },
+        {
+          "$id": "158",
+          "name": "Bcc",
+          "expressions": {
+            "$id": "159"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "160",
+      "activityId": "fcdcf0bf-7ad0-4cf3-8ac5-5db35775ec71",
+      "type": "SignalReceived",
+      "displayName": "Sottoscritto P",
+      "description": "Accordo sottoscritto dal proponente",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "161",
+          "name": "Signal",
+          "expressions": {
+            "$id": "162",
+            "Literal": "SottoscrittoP"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "163",
+      "activityId": "9a36e53e-3559-4101-b1f9-d9ed74bd39ad",
+      "type": "UpdateStatoAccordoActivity",
+      "displayName": "Sottoscritto",
+      "description": "Accordo sottoscritto dalle parti",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "164",
+          "name": "IdAccordo",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "165",
+            "JavaScript": "correlationId"
+          }
+        },
+        {
+          "$id": "166",
+          "name": "Stato",
+          "expressions": {
+            "$id": "167",
+            "Literal": "Sottoscritto"
+          }
+        },
+        {
+          "$id": "168",
+          "name": "Autore",
+          "expressions": {
+            "$id": "169"
+          }
+        },
+        {
+          "$id": "170",
+          "name": "Note",
+          "expressions": {
+            "$id": "171"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "172",
+      "activityId": "a1e7f4c3-5c86-4b54-a552-ca748401bb8c",
+      "type": "SendMailActivity",
+      "displayName": "Invia email sottoscrizione",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "173",
+          "name": "From",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "174",
+            "JavaScript": "getVariable('sender')"
+          }
+        },
+        {
+          "$id": "175",
+          "name": "To",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "176",
+            "JavaScript": "[activities.GetAccordo.Output().Dipendente.Email]"
+          }
+        },
+        {
+          "$id": "177",
+          "name": "Subject",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "178",
+            "JavaScript": "\"[Lavoro Agile] Accordo \" + activities.GetAccordo.Output().Dipendente.NomeCognome + \" (codice \" + activities.GetAccordo.Output().Codice + \") sottoscritto\""
+          }
+        },
+        {
+          "$id": "179",
+          "name": "Attachments",
+          "expressions": {
+            "$id": "180"
+          }
+        },
+        {
+          "$id": "181",
+          "name": "Body",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "182",
+            "Literal": "",
+            "JavaScript": "const greetings = (new Date()).getHours() < 12 ? \"Buongiorno\" : \"Buonasera\";\r\n\r\nconst body = greetings + \",<br /><br/>il suo accordo di lavoro agile è stato approvato e sottoscritto.<br/><br/>Cordiali saluti.\";\r\n\r\nreturn body;"
+          }
+        },
+        {
+          "$id": "183",
+          "name": "Cc",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "184",
+            "JavaScript": "// I destinatari in copia sono gli approvatori precedenti dello step attuale ed il responsabile\r\n// dello step attuale. \r\nlet receivers = JSON.parse(activities.Approvers.Output().approvatoriPrecedenti);\r\nreceivers.push(activities.Approvers.Output().approvatore);\r\n\r\nreturn receivers;"
+          }
+        },
+        {
+          "$id": "185",
+          "name": "Bcc",
+          "expressions": {
+            "$id": "186"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "187",
+      "activityId": "1aa3268d-6350-4c66-ad44-5ffb2639890b",
+      "type": "Finish",
+      "displayName": "Finish",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "188",
+          "name": "ActivityOutput",
+          "expressions": {
+            "$id": "189"
+          }
+        },
+        {
+          "$id": "190",
+          "name": "OutcomeNames",
+          "expressions": {
+            "$id": "191"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    },
+    {
+      "$id": "192",
+      "activityId": "c9dd3f37-b65a-4c91-b191-4e426909e887",
+      "type": "SendMailActivity",
+      "displayName": "Invia mail a responsabile",
+      "persistWorkflow": false,
+      "loadWorkflowContext": false,
+      "saveWorkflowContext": false,
+      "properties": [
+        {
+          "$id": "193",
+          "name": "From",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "194",
+            "Literal": "getVariable('sender')",
+            "JavaScript": "getVariable('sender')"
+          }
+        },
+        {
+          "$id": "195",
+          "name": "To",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "196",
+            "JavaScript": "[activities.Approvers.Output().approvatore]"
+          }
+        },
+        {
+          "$id": "197",
+          "name": "Subject",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "198",
+            "JavaScript": "\"[Lavoro Agile] Richiesta approvazione accordo \" + activities.GetAccordo.Output().Dipendente.NomeCognome + \" (codice \" + activities.GetAccordo.Output().Codice + \")\""
+          }
+        },
+        {
+          "$id": "199",
+          "name": "Attachments",
+          "expressions": {
+            "$id": "200"
+          }
+        },
+        {
+          "$id": "201",
+          "name": "Body",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "202",
+            "JavaScript": "const greetings = (new Date()).getHours() < 12 ? \"Buongiorno\" : \"Buonasera\";\r\n\r\nreturn greetings + \",<br/><br/>in qualità di responsabile dell'accordo \" + activities.GetAccordo.Output().Codice + \" è richiesta la sua presa in visione e l'accettazione/rifiuto. <br/><br/>Può prendere visione dell'accordo, cliccando <a href='\" + getVariable('detailsUrl') + activities.GetAccordo.Output().Id + \"?role=PCM_InternalOperativeRole_ResponsabileAccordo'>qui</a>.<br/><br/>Cordiali saluti.\""
+          }
+        },
+        {
+          "$id": "203",
+          "name": "Cc",
+          "syntax": "JavaScript",
+          "expressions": {
+            "$id": "204",
+            "JavaScript": "[activities.GetAccordo.Output().Dipendente.Email]"
+          }
+        },
+        {
+          "$id": "205",
+          "name": "Bcc",
+          "expressions": {
+            "$id": "206"
+          }
+        }
+      ],
+      "propertyStorageProviders": {}
+    }
+  ],
+  "connections": [
+    {
+      "$id": "207",
+      "sourceActivityId": "8aa93c26-718e-45ea-b236-75238edd6fc4",
+      "targetActivityId": "2ada042e-f49d-4d7e-8f9e-b1869c3a21f1",
+      "outcome": "Done"
+    },
+    {
+      "$id": "208",
+      "sourceActivityId": "2ada042e-f49d-4d7e-8f9e-b1869c3a21f1",
+      "targetActivityId": "3413383d-f635-43cf-92ce-89db42e47068",
+      "outcome": "Done"
+    },
+    {
+      "$id": "209",
+      "sourceActivityId": "3413383d-f635-43cf-92ce-89db42e47068",
+      "targetActivityId": "17730cc6-3238-4603-b96e-f541a67f6545",
+      "outcome": "Iterate"
+    },
+    {
+      "$id": "210",
+      "sourceActivityId": "17730cc6-3238-4603-b96e-f541a67f6545",
+      "targetActivityId": "582a31e7-6607-4b23-a692-ffcbaa99028c",
+      "outcome": "Done"
+    },
+    {
+      "$id": "211",
+      "sourceActivityId": "5a5ee3be-54c2-47b9-868a-e8023eaa8317",
+      "targetActivityId": "4567192b-2d58-4d69-bfae-1b94aef8547c",
+      "outcome": "Approvato"
+    },
+    {
+      "$id": "212",
+      "sourceActivityId": "5a5ee3be-54c2-47b9-868a-e8023eaa8317",
+      "targetActivityId": "d061061a-2ab0-4051-a6e7-cac9aab5d5a8",
+      "outcome": "Rifiutato"
+    },
+    {
+      "$id": "213",
+      "sourceActivityId": "5a5ee3be-54c2-47b9-868a-e8023eaa8317",
+      "targetActivityId": "9ebda7f7-4a90-4b75-89ff-61c7e94a3d87",
+      "outcome": "Richiesta di modifica"
+    },
+    {
+      "$id": "214",
+      "sourceActivityId": "582a31e7-6607-4b23-a692-ffcbaa99028c",
+      "targetActivityId": "3413383d-f635-43cf-92ce-89db42e47068",
+      "outcome": "False"
+    },
+    {
+      "$id": "215",
+      "sourceActivityId": "9ebda7f7-4a90-4b75-89ff-61c7e94a3d87",
+      "targetActivityId": "57f34f82-67cd-414a-9ed9-300acdae7aef",
+      "outcome": "Done"
+    },
+    {
+      "$id": "216",
+      "sourceActivityId": "d061061a-2ab0-4051-a6e7-cac9aab5d5a8",
+      "targetActivityId": "0b6dc5e1-c308-4c22-911a-35e22a403b1f",
+      "outcome": "Done"
+    },
+    {
+      "$id": "217",
+      "sourceActivityId": "efcc70a9-cfb7-4deb-b23e-f98dc00ba6fa",
+      "targetActivityId": "e5d1c746-8818-4adf-b4d2-0d37e28436cb",
+      "outcome": "Done"
+    },
+    {
+      "$id": "218",
+      "sourceActivityId": "582a31e7-6607-4b23-a692-ffcbaa99028c",
+      "targetActivityId": "91ba2887-fc03-4ff1-a7b7-5e8709521918",
+      "outcome": "True"
+    },
+    {
+      "$id": "219",
+      "sourceActivityId": "4567192b-2d58-4d69-bfae-1b94aef8547c",
+      "targetActivityId": "efcc70a9-cfb7-4deb-b23e-f98dc00ba6fa",
+      "outcome": "Done"
+    },
+    {
+      "$id": "220",
+      "sourceActivityId": "57f34f82-67cd-414a-9ed9-300acdae7aef",
+      "targetActivityId": "c4e0d9e3-aaa6-4af8-9386-477facfd3045",
+      "outcome": "Done"
+    },
+    {
+      "$id": "221",
+      "sourceActivityId": "c4e0d9e3-aaa6-4af8-9386-477facfd3045",
+      "targetActivityId": "6485ed44-318f-428f-88ed-4e39a8d95a09",
+      "outcome": "Done"
+    },
+    {
+      "$id": "222",
+      "sourceActivityId": "0b6dc5e1-c308-4c22-911a-35e22a403b1f",
+      "targetActivityId": "182e4755-77ea-43e4-918c-4e470940c5a2",
+      "outcome": "Done"
+    },
+    {
+      "$id": "223",
+      "sourceActivityId": "182e4755-77ea-43e4-918c-4e470940c5a2",
+      "targetActivityId": "8bb9374f-757a-40c8-bd75-652c73da440a",
+      "outcome": "Done"
+    },
+    {
+      "$id": "224",
+      "sourceActivityId": "e5d1c746-8818-4adf-b4d2-0d37e28436cb",
+      "targetActivityId": "3cf07c70-21b8-491d-a441-0c8dbaa48e95",
+      "outcome": "Done"
+    },
+    {
+      "$id": "225",
+      "sourceActivityId": "3cf07c70-21b8-491d-a441-0c8dbaa48e95",
+      "targetActivityId": "3413383d-f635-43cf-92ce-89db42e47068",
+      "outcome": "Done"
+    },
+    {
+      "$id": "226",
+      "sourceActivityId": "c6844746-0009-4164-86d5-ff7ea2edca33",
+      "targetActivityId": "7ea410aa-a937-4f90-adf7-c2271bbd2648",
+      "outcome": "Done"
+    },
+    {
+      "$id": "227",
+      "sourceActivityId": "7ea410aa-a937-4f90-adf7-c2271bbd2648",
+      "targetActivityId": "742d6f33-bcd5-4993-a53d-fb8673068484",
+      "outcome": "Done"
+    },
+    {
+      "$id": "228",
+      "sourceActivityId": "742d6f33-bcd5-4993-a53d-fb8673068484",
+      "targetActivityId": "fcdcf0bf-7ad0-4cf3-8ac5-5db35775ec71",
+      "outcome": "Done"
+    },
+    {
+      "$id": "229",
+      "sourceActivityId": "fcdcf0bf-7ad0-4cf3-8ac5-5db35775ec71",
+      "targetActivityId": "9a36e53e-3559-4101-b1f9-d9ed74bd39ad",
+      "outcome": "Done"
+    },
+    {
+      "$id": "230",
+      "sourceActivityId": "9a36e53e-3559-4101-b1f9-d9ed74bd39ad",
+      "targetActivityId": "a1e7f4c3-5c86-4b54-a552-ca748401bb8c",
+      "outcome": "Done"
+    },
+    {
+      "$id": "231",
+      "sourceActivityId": "a1e7f4c3-5c86-4b54-a552-ca748401bb8c",
+      "targetActivityId": "1aa3268d-6350-4c66-ad44-5ffb2639890b",
+      "outcome": "Done"
+    },
+    {
+      "$id": "232",
+      "sourceActivityId": "3413383d-f635-43cf-92ce-89db42e47068",
+      "targetActivityId": "c6844746-0009-4164-86d5-ff7ea2edca33",
+      "outcome": "Done"
+    },
+    {
+      "$id": "233",
+      "sourceActivityId": "91ba2887-fc03-4ff1-a7b7-5e8709521918",
+      "targetActivityId": "c9dd3f37-b65a-4c91-b191-4e426909e887",
+      "outcome": "Done"
+    },
+    {
+      "$id": "234",
+      "sourceActivityId": "c9dd3f37-b65a-4c91-b191-4e426909e887",
+      "targetActivityId": "5a5ee3be-54c2-47b9-868a-e8023eaa8317",
+      "outcome": "Done"
+    }
+  ],
+  "id": "f3bc5e2d190d46788fdd57d2e76321ec"
+}

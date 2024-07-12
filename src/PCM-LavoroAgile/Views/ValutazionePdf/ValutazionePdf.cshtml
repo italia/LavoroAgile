@@ -1,0 +1,256 @@
+﻿@model AccordoForPdf
+
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+      xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+      xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+
+</head>
+
+<body>
+
+    <div>
+        <p class=MsoHeader align=right style='text-align:right'>
+            <span lang=IT style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;'>VALUTAZIONE ACCORDO DI LAVORO AGILE</span>
+        </p>
+
+        <p class=MsoHeader align=right style='text-align:right; color:white'>
+            -<br />-
+        </p>
+
+        <p class=MsoHeader align=right style='text-align:right'>
+            <i>
+                <span lang=IT style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#0070C0;'>
+                    @Model.Accordo.Dipendente.NomeCognome
+                </span>
+            </i>
+        </p>
+
+        <p class=MsoHeader align=right style='text-align:right'>
+            <span lang=IT style='font-size:6pt'>
+                @{@($"PCM - LA - {Model.Accordo.Codice} - {Model.Accordo.Dipendente.NomeCognome}");}
+            </span>
+        </p>
+    </div>
+
+    <div class=WordSection1>
+        <table>
+        @foreach (AttivitaAccordo attivitaAccordo in Model.Accordo.ListaAttivita)
+        {           
+            <tr>
+                <td style='font-size:16.0pt; text-decoration:underline;'>
+                    <strong>@(attivitaAccordo.Index + 1). @if (attivitaAccordo.Id != 0){@("ATT-" + @attivitaAccordo.Id)}</strong>                    
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong><i>Attività</i></strong>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @attivitaAccordo.Attivita
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <strong><i>Risultati Attesi</i></strong>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @attivitaAccordo.Risultati
+                </td>
+            </tr>
+            @if (attivitaAccordo.TipologiaIndicatore == "Testo")
+            {
+                <tr>
+                    <td>
+                        <strong><i>Indicatori</i></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @attivitaAccordo.DenominazioneIndicatore @attivitaAccordo.OperatoreLogicoIndicatoreTesto @attivitaAccordo.TestoTarget
+                    </td>
+                </tr>
+            }
+            if (attivitaAccordo.TipologiaIndicatore == "NumeroAssoluto")
+            {
+                <tr>
+                    <td>
+                        <strong><i>Indicatori</i></strong>
+                    </td>
+                </tr>
+                @if (attivitaAccordo.OperatoreLogicoIndicatoreNumeroAssoluto != "compreso tra")
+                {
+                    <tr>
+                        <td>
+                            @attivitaAccordo.DenominazioneIndicatore @attivitaAccordo.OperatoreLogicoIndicatoreNumeroAssoluto @attivitaAccordo.NumeroAssolutoTarget
+                        </td>
+                    </tr>
+                } 
+                else
+                {
+                   <tr>
+                       <td>
+                            @attivitaAccordo.DenominazioneIndicatore @attivitaAccordo.OperatoreLogicoIndicatoreNumeroAssoluto @attivitaAccordo.NumeroAssolutoDaTarget e @attivitaAccordo.NumeroAssolutoATarget
+                       </td>
+                   </tr>     
+                }
+             }
+            @if (attivitaAccordo.TipologiaIndicatore == "Percentuale")
+            {
+                <tr>
+                    <td>
+                        <strong><i>Indicatori</i></strong>
+                    </td>
+                </tr>
+                @if (attivitaAccordo.OperatoreLogicoIndicatorePercentuale != "compreso tra")
+                {
+                    <tr>
+                        <td>
+                            @attivitaAccordo.DenominazioneIndicatore @attivitaAccordo.OperatoreLogicoIndicatorePercentuale @attivitaAccordo.PercentualeTarget% ( @attivitaAccordo.PercentualeIndicatoreDenominazioneNumeratore / @attivitaAccordo.PercentualeIndicatoreDenominazioneDenominatore)
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>
+                            @attivitaAccordo.DenominazioneIndicatore @attivitaAccordo.OperatoreLogicoIndicatorePercentuale @attivitaAccordo.PercentualeDaTarget% e @attivitaAccordo.PercentualeATarget% ( @attivitaAccordo.PercentualeIndicatoreDenominazioneNumeratore / @attivitaAccordo.PercentualeIndicatoreDenominazioneDenominatore)
+                        </td>
+                    </tr>       
+                }
+            }
+            @if (attivitaAccordo.TipologiaIndicatore == "Data")
+            {
+                <tr>
+                    <td>
+                        <strong><i>Indicatori</i></strong>
+                    </td>
+                </tr>
+                @if (attivitaAccordo.OperatoreLogicoIndicatoreData != "compreso tra")
+                {
+                    <tr>
+                        <td>
+                            @attivitaAccordo.DenominazioneIndicatore @attivitaAccordo.OperatoreLogicoIndicatoreData @attivitaAccordo.DataTarget.Value.ToShortDateString()
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>
+                            @attivitaAccordo.DenominazioneIndicatore @attivitaAccordo.OperatoreLogicoIndicatoreData il @attivitaAccordo.DataDaTarget.Value.ToShortDateString() ed il @attivitaAccordo.DataATarget.Value.ToShortDateString()
+                        </td>
+                    </tr>
+                }
+            }
+            <tr>
+                <td>
+                    <strong><i>Target Raggiunto</i></strong>
+                </td>
+            </tr>
+            @if (attivitaAccordo.TipologiaIndicatore == "Testo")
+            {
+                <tr>
+                    <td>
+                        @attivitaAccordo.TestoTargetRaggiunto
+                    </td>
+                </tr>
+                }
+            @if (attivitaAccordo.TipologiaIndicatore == "NumeroAssoluto")
+            {
+                <tr>
+                    <td>
+                        @attivitaAccordo.NumeroAssolutoRaggiunto
+                    </td>
+                </tr>                    
+            }
+            @if (attivitaAccordo.TipologiaIndicatore == "Percentuale")
+            {
+                <tr>
+                    <td>
+                        @attivitaAccordo.PercentualeIndicatoreDenominazioneNumeratore :
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @attivitaAccordo.PercentualeNumeratoreTargetRaggiunto
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @attivitaAccordo.PercentualeIndicatoreDenominazioneDenominatore :
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @attivitaAccordo.PercentualeDenominatoreTargetRaggiunto
+                    </td>
+                </tr>
+            }
+            @if (attivitaAccordo.TipologiaIndicatore == "Data")
+            {
+                <tr>
+                    <td>
+                        @(attivitaAccordo.DataTargetRaggiunto.HasValue ? attivitaAccordo.DataTargetRaggiunto.Value.ToString("dd/MM/yyyy") : String.Empty)
+                    </td>
+                </tr>
+            }
+        }
+        @if (Model.Accordo.DataNotaDipendente != null && !String.IsNullOrEmpty(Model.Accordo.NotaDipendente))
+        {
+            <tr>
+                <td style='font-size:16.0pt; text-decoration:underline;'>
+                    <strong><i>Note del dipendente @(
+                        Model.Accordo.DataNotaDipendente != null ? " - " + Model.Accordo.DataNotaDipendente.Value.ToString("dd/MM/yyyy") : ""
+                        )</i></strong>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @(Model.Accordo.NotaDipendente)
+                </td>
+            </tr>
+        }
+        @if (Model.Accordo.DataNotaDirigente != null &&!String.IsNullOrEmpty(Model.Accordo.NotaDirigente))
+        {
+            <tr>
+                <td style='font-size:16.0pt; text-decoration:underline;'>
+                    <strong><i>Note del dirigente @(Model.Accordo.DataNotaDirigente != null ? " - " + Model.Accordo.DataNotaDirigente.Value.ToString("dd/MM/yyyy") : "")</i></strong>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @(Model.Accordo.NotaDirigente)
+                </td>
+            </tr>
+        }
+        @if (Model.Accordo.isValutazionePositiva)
+        {
+            <tr>
+                <td style='font-size:16.0pt; text-decoration:underline;'>
+                    <strong>Valutazione Positiva</strong>
+                </td>
+            </tr>
+        }
+        @if(!Model.Accordo.isValutazionePositiva && Model.Accordo.DataNotaDipendente != null && Model.Accordo.DataNotaDirigente != null)
+        {
+            <tr>
+                <td style='font-size:16.0pt; text-decoration:underline;'>
+                    <strong>Valutazione Negativa</strong>
+                </td>
+            </tr>
+        }
+        </table>
+    </div>
+    
+</body>
+
+</html>
+

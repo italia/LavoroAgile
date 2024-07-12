@@ -1,0 +1,32 @@
+﻿@model AccordoForPdf
+
+<div>
+    <p class=MsoHeader align=right style='text-align:right'>
+        <span lang=IT style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;'>ACCORDO DI LAVORO AGILE</span>
+    </p>
+
+    <p class=MsoHeader align=right style='text-align:right'>
+        <span lang=IT style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;'>
+            Dal<span lang=IT style='font-size:10.0pt;color:#0070C0'> @Model.Accordo.DataInizioUtc.ToString("dd/MM/yyyy")</span>
+            al<span lang=IT style='font-size:10.0pt;color:#0070C0'> @Model.Accordo.DataFineUtc.ToString("dd/MM/yyyy")</span>
+        </span>
+    </p>
+    
+    <p class=MsoHeader align=right style='text-align:right'>
+        <i>
+            <span lang=IT style='font-size:9.0pt;font-family:"Segoe UI",sans-serif;color:#0070C0;'>
+                @Model.Accordo.Dipendente.NomeCognome
+            </span>
+        </i>
+    </p>
+
+    <p class=MsoHeader align=right style='text-align:right'>
+        <span lang=IT style='font-size:6pt'>
+            @{
+                @($"PCM - LA - {Model.Accordo.Codice} - {Model.Accordo.Dipendente.NomeCognome}.pdf");
+            }
+        </span>
+    </p>
+
+    <br />
+</div>

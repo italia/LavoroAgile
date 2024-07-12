@@ -1,0 +1,234 @@
+﻿@model AttivitaAccordoViewModel
+@{
+    bool verifica = true;
+    string colore = "";
+    string bgcolore = "";
+
+    if (Model.TipologiaIndicatore == "Testo")
+    {
+        switch (Model.OperatoreLogicoIndicatoreTesto.ToEnum<OperatoriLogici>())
+        {
+            case OperatoriLogici.UgualeA: if (Model.TestoTargetRaggiunto == Model.TestoTarget) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.DiversoDA: if (Model.TestoTargetRaggiunto != Model.TestoTarget) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            default: break;
+        }
+    }
+    if (Model.TipologiaIndicatore == "NumeroAssoluto")
+    {
+        switch (Model.OperatoreLogicoIndicatoreNumeroAssoluto.ToEnum<OperatoriLogici>())
+        {
+            case OperatoriLogici.UgualeA: if (Convert.ToInt32(Model.NumeroAssolutoRaggiunto) == Convert.ToInt32(Model.NumeroAssolutoTarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.DiversoDA: if (Convert.ToInt32(Model.NumeroAssolutoRaggiunto) != Convert.ToInt32(Model.NumeroAssolutoTarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.MinoreDI: if (Convert.ToInt32(Model.NumeroAssolutoRaggiunto) < Convert.ToInt32(Model.NumeroAssolutoTarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.MinoreUgualeA: if (Convert.ToInt32(Model.NumeroAssolutoRaggiunto) <= Convert.ToInt32(Model.NumeroAssolutoTarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.MaggioreDI: if (Convert.ToInt32(Model.NumeroAssolutoRaggiunto) > Convert.ToInt32(Model.NumeroAssolutoTarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.MaggioreUgualeA: if (Convert.ToInt32(Model.NumeroAssolutoRaggiunto) >= Convert.ToInt32(Model.NumeroAssolutoTarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.CompresoTRA: if (Convert.ToInt32(Model.NumeroAssolutoRaggiunto) >= Convert.ToInt32(Model.NumeroAssolutoDaTarget) && Convert.ToInt32(Model.NumeroAssolutoRaggiunto) <= Convert.ToInt32(Model.NumeroAssolutoATarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            default: break;
+        }
+    }
+    if (Model.TipologiaIndicatore == "Percentuale")
+    {
+        Model.PercentualeTargetRaggiunto = "0";
+        int verifyParse = 0;
+        if(Int32.TryParse(Model.PercentualeNumeratoreTargetRaggiunto, out verifyParse) && 
+            Int32.TryParse(Model.PercentualeDenominatoreTargetRaggiunto, out verifyParse) &&
+            !Model.PercentualeNumeratoreTargetRaggiunto.Equals("0") &&
+            !Model.PercentualeDenominatoreTargetRaggiunto.Equals("0")) 
+        {
+            Model.PercentualeTargetRaggiunto = (Int32.Parse(Model.PercentualeNumeratoreTargetRaggiunto)*100 / Int32.Parse(Model.PercentualeDenominatoreTargetRaggiunto)).ToString();
+        }
+        switch (Model.OperatoreLogicoIndicatorePercentuale.ToEnum<OperatoriLogici>())
+        {
+            case OperatoriLogici.UgualeA: if (Convert.ToInt32(Model.PercentualeTargetRaggiunto) == Convert.ToInt32(Model.PercentualeTarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.DiversoDA: if (Convert.ToInt32(Model.PercentualeTargetRaggiunto) != Convert.ToInt32(Model.PercentualeTarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.MinoreDI: if (Convert.ToInt32(Model.PercentualeTargetRaggiunto) < Convert.ToInt32(Model.PercentualeTarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.MinoreUgualeA: if (Convert.ToInt32(Model.PercentualeTargetRaggiunto) <= Convert.ToInt32(Model.PercentualeTarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.MaggioreDI: if (Convert.ToInt32(Model.PercentualeTargetRaggiunto) > Convert.ToInt32(Model.PercentualeTarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.MaggioreUgualeA: if (Convert.ToInt32(Model.PercentualeTargetRaggiunto) >= Convert.ToInt32(Model.PercentualeTarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.CompresoTRA: if (Convert.ToInt32(Model.PercentualeTargetRaggiunto) >= Convert.ToInt32(Model.PercentualeDaTarget) && Convert.ToInt32(Model.PercentualeTargetRaggiunto) <= Convert.ToInt32(Model.PercentualeATarget)) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            default: break;
+        }
+    }
+    if (Model.TipologiaIndicatore == "Data")
+    {
+        switch (Model.OperatoreLogicoIndicatoreData.ToEnum<OperatoriLogici>())
+        {
+            case OperatoriLogici.UgualeA: if (Model.DataTargetRaggiunto == Model.DataTarget) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.DiversoDA: if (Model.DataTargetRaggiunto != Model.DataTarget) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.MinoreDI: if (Model.DataTargetRaggiunto < Model.DataTarget) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.MinoreUgualeA: if (Model.DataTargetRaggiunto <= Model.DataTarget) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.MaggioreDI: if (Model.DataTargetRaggiunto > Model.DataTarget) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.MaggioreUgualeA: if (Model.DataTargetRaggiunto >= Model.DataTarget) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            case OperatoriLogici.CompresoTRA: if (Model.DataTargetRaggiunto >= Model.DataDaTarget && Model.DataTargetRaggiunto <= Model.DataATarget) { verifica = true; colore = "text-success"; bgcolore = "bg-success"; } break;
+            default: break;
+        }
+    }
+}
+    <tr >
+        <td width="5%" class="border-bottom-2 @bgcolore ">
+            <div class="row text-center">
+                <div class="col">
+                    @*@if (verifica)
+                    {
+                        <span class="attivitaIndex text-success">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-check-circle"></use>
+                            </svg>
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="attivitaIndex text-danger">
+                            <svg class="icon">
+                                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-close-circle"></use>
+                            </svg>
+                        </span>
+                    }*@
+                </div>
+            </div>
+        </td>
+        <td width="85%" class="border-bottom-2">
+            <input hidden name="ListaAttivita[@Model.Index].Index" asp-for="Index" />
+            <div class="form-row">
+                <div class="col">
+                    <label >Attività Correnti</label>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <textarea  name="ListaAttivita[@Model.Index].Attivita" asp-for="Attivita" readonly></textarea>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <label >Risultati Attesi</label>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <textarea  name="ListaAttivita[@Model.Index].Risultati" asp-for="Risultati" readonly></textarea>
+                </div>
+            </div>
+
+            @if (Model.TipologiaIndicatore == "Testo")
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <label >Indicatori</label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="@colore" name="ListaAttivita[@Model.Index].TestoTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreTesto @Model.TestoTarget</textarea>
+                    </div>
+                </div>
+            }
+            @if (Model.TipologiaIndicatore == "NumeroAssoluto")
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <label >Indicatori</label>
+                    </div>
+                </div>
+                @if (Model.OperatoreLogicoIndicatoreNumeroAssoluto != "compreso tra")
+                {
+                    <div class="form-row">
+                        <div class="col">
+                            <textarea class="@colore" name="ListaAttivita[@Model.Index].NumeroAssolutoTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreNumeroAssoluto @Model.NumeroAssolutoTarget</textarea>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-row">
+                        <div class="col">
+                            <textarea class="@colore" name="ListaAttivita[@Model.Index].NumeroAssolutoTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreNumeroAssoluto @Model.NumeroAssolutoDaTarget e @Model.NumeroAssolutoATarget</textarea>
+                        </div>
+                    </div>
+                }
+            }
+            @if (Model.TipologiaIndicatore == "Percentuale")
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <label >Indicatori</label>
+                    </div>
+                </div>
+
+                @if (Model.OperatoreLogicoIndicatorePercentuale != "compreso tra")
+                {
+                    <div class="form-row">
+                        <div class="col">
+                            <textarea class="@colore" name="ListaAttivita[@Model.Index].PercentualeTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatorePercentuale @Model.PercentualeTarget% ( @Model.PercentualeIndicatoreDenominazioneNumeratore / @Model.PercentualeIndicatoreDenominazioneDenominatore)</textarea>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-row">
+                        <div class="col">
+                            <textarea class="@colore" name="ListaAttivita[@Model.Index].PercentualeTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatorePercentuale @Model.PercentualeDaTarget% e @Model.PercentualeATarget% ( @Model.PercentualeIndicatoreDenominazioneNumeratore / @Model.PercentualeIndicatoreDenominazioneDenominatore)</textarea>
+                        </div>
+                    </div>
+                }
+            }
+            @if (Model.TipologiaIndicatore == "Data")
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <label >Indicatori</label>
+                    </div>
+                </div>
+                @if (Model.OperatoreLogicoIndicatoreData != "compreso tra")
+                {
+                    <div class="form-row">
+                        <div class="col">
+                            <textarea class="@colore" name="ListaAttivita[@Model.Index].DataTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreData @Model.DataTarget.Value.ToShortDateString()</textarea>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-row">
+                        <div class="col">
+                            <textarea class="@colore" name="ListaAttivita[@Model.Index].DataTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreData il @Model.DataDaTarget.Value.ToShortDateString() ed il @Model.DataATarget.Value.ToShortDateString()</textarea>
+                        </div>
+                    </div>
+                }
+            }
+
+            <div class="form-row">
+                <div class="col">
+                    <label >Target Raggiunto : </label>
+                </div>
+            </div>
+
+            @if (Model.TipologiaIndicatore == "Testo")
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="@colore" name="ListaAttivita[@Model.Index].TestoTargetRaggiunto" asp-for="TestoTargetRaggiunto" readonly></textarea>
+                    </div>
+                </div>
+            }
+            @if (Model.TipologiaIndicatore == "NumeroAssoluto")
+            {
+                <div class="col-10">
+                    <input type="number" class="@colore" name="ListaAttivita[@Model.Index].NumeroAssolutoRaggiunto" min="0" asp-for="NumeroAssolutoRaggiunto" readonly></input>
+                </div>
+            }
+            @if (Model.TipologiaIndicatore == "Percentuale")
+            {
+                <div class="col-10">
+                    <textarea class="@colore" name="ListaAttivita[@Model.Index].PercentualeTargetRaggiunto" readonly> @Model.PercentualeTargetRaggiunto % ( @Model.PercentualeNumeratoreTargetRaggiunto / @Model.PercentualeDenominatoreTargetRaggiunto )</textarea>
+                </div>
+            }
+            @if (Model.TipologiaIndicatore == "Data")
+            {
+                <div class="col-10">
+                    <input type="date" class="@colore" name="ListaAttivita[@Model.Index].DataTargetRaggiunto" asp-for="DataTargetRaggiunto" readonly></input>
+                </div>
+            }
+            </td>
+    </tr>

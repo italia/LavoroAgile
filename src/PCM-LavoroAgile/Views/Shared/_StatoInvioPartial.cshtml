@@ -1,0 +1,121 @@
+﻿<!-- Informazioni sullo stato di invio dati a sistemi esterni -->
+@model TransmissionStatusViewModel
+<!-- Invio attività, visibile solo se è valorizzata la data di invio -->
+@if (Model.LastWorkingActivitiesSentDate.HasValue)
+{
+    <div class="row">
+        <div class="col-1">
+            <svg class="icon icon-sm icon-@(Model.WorkingActivitiesSentSuccessfully ? "success" : "danger")">
+                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-@(Model.WorkingActivitiesSentSuccessfully ? "check" : "close")-circle"></use>
+            </svg>
+        </div>
+        <div class="col">
+            <span class="align-middle card-text">
+                @{
+                    var activityText = "Invio attività fallito in data " + @Model.LastWorkingActivitiesSentDate?.ToLongDateString();
+                    if (Model.WorkingActivitiesSentSuccessfully)
+                    {
+                        activityText = "Attività inviate con successo in data " + @Model.LastWorkingActivitiesSentDate?.ToLongDateString();
+                    }
+
+                }
+                @activityText&nbsp;
+                @if (!string.IsNullOrWhiteSpace(Model.WorkingActivitiesSendError))
+                {
+                    <span>con errore <i>@Model.WorkingActivitiesSendError</i>.</span>
+                }
+            </span>
+        </div>
+    </div>
+}
+<!-- Invio giornate, visible solo se è valorizzata la data di invio -->
+@if (Model.LastWorkingDaysSentDate.HasValue)
+{
+    <div class="row">
+        <div class="col-1">
+            <svg class="icon icon-sm icon-@(Model.WorkingDaysSentSuccessfully ? "success" : "danger")">
+                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-@(Model.WorkingDaysSentSuccessfully ? "check" : "close")-circle"></use>
+            </svg>
+        </div>
+        <div class="col">
+            <span class="align-middle card-text">
+                @{
+                    var daysText = "Invio giornate fallito in data " + @Model.LastWorkingDaysSentDate?.ToLongDateString();
+                    if (Model.WorkingDaysSentSuccessfully)
+                    {
+                        daysText = "Giornate inviate con successo in data " + @Model.LastWorkingDaysSentDate?.ToLongDateString();
+                    }
+
+                }
+                @daysText&nbsp;
+                @if (!string.IsNullOrWhiteSpace(Model.WorkingDaysSendError))
+                {
+                    <span>con errore <i>@Model.WorkingDaysSendError</i>.</span>
+                }
+            </span>
+        </div>
+    </div>
+}
+
+<!-- Invio nuova comunicazione Ministero del lavoro-->
+@if (Model.NuovaComunicazioneMinisteroLavoroLastSentDate.HasValue &&
+    (User.IsInRole(RoleAndKeysClaimEnum.ADMINISTRATOR.ToDescriptionString()))
+)
+{
+    <div class="row">
+        <div class="col-1">
+            <svg class="icon icon-sm icon-@(Model.NuovaComunicazioneMinisteroLavoroSentSuccessfully ? "success" : "danger")">
+                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-@(Model.NuovaComunicazioneMinisteroLavoroSentSuccessfully ? "check" : "close")-circle"></use>
+            </svg>
+        </div>
+        <div class="col">
+            <span class="align-middle card-text">
+                @{
+                    var daysText = "Invio comunicazione Ministero del Lavoro fallito in data " + @Model.NuovaComunicazioneMinisteroLavoroLastSentDate?.ToLongDateString();
+                    if (Model.NuovaComunicazioneMinisteroLavoroSentSuccessfully)
+                    {
+                        daysText = "Invio comunicazione Ministero del Lavoro effettuato con successo in data " + @Model.NuovaComunicazioneMinisteroLavoroLastSentDate?.ToLongDateString();
+                    }
+
+                }
+                @daysText&nbsp;
+                @if (!string.IsNullOrWhiteSpace(Model.NuovaComunicazioneMinisteroLavoroSendError))
+                {
+                    <span>con errore <i>@Model.NuovaComunicazioneMinisteroLavoroSendError</i>.</span>
+                }
+            </span>
+        </div>
+    </div>
+}
+
+<!-- Invio recesso Ministero del lavoro-->
+@if (Model.RecessoComunicazioneMinisteroLavoroLastSentDate.HasValue && 
+   (User.IsInRole(RoleAndKeysClaimEnum.ADMINISTRATOR.ToDescriptionString()))
+)
+{
+    <div class="row">
+        <div class="col-1">
+            <svg class="icon icon-sm icon-@(Model.RecessoComunicazioneMinisteroLavoroSentSuccessfully ? "success" : "danger")">
+                <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-@(Model.RecessoComunicazioneMinisteroLavoroSentSuccessfully ? "check" : "close")-circle"></use>
+            </svg>
+        </div>
+        <div class="col">
+            <span class="align-middle card-text">
+                @{
+                    var daysText = "Invio recesso Ministero del lavoro fallito in data " + @Model.RecessoComunicazioneMinisteroLavoroLastSentDate?.ToLongDateString();
+                    if (Model.RecessoComunicazioneMinisteroLavoroSentSuccessfully)
+                    {
+                        daysText = "Invio recesso Ministero del lavoro effettuato con successo in data " + @Model.RecessoComunicazioneMinisteroLavoroLastSentDate?.ToLongDateString();
+                    }
+
+                }
+                @daysText&nbsp;
+                @if (!string.IsNullOrWhiteSpace(Model.RecessoComunicazioneMinisteroLavoroSendError))
+                {
+                    <span>con errore <i>@Model.RecessoComunicazioneMinisteroLavoroSendError</i>.</span>
+                }
+            </span>
+        </div>
+    </div>
+}
+

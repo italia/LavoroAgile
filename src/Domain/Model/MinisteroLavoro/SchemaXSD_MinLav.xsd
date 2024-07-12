@@ -1,0 +1,122 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<xs:schema targetNamespace="http://mlps.gov.it/DataModels/InformationDelivery/SmartWorking/1.0" xmlns="http://mlps.gov.it/DataModels/InformationDelivery/SmartWorking/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="qualified">
+ <xs:simpleType name="CodiceComunicazione">
+ <xs:restriction base="xs:string">
+ <xs:pattern value="[0-9]{17}"/>
+ </xs:restriction>
+ </xs:simpleType>
+ <xs:simpleType name="CodiceComune">
+ <xs:restriction base="xs:string">
+ <xs:pattern value="[A-Z]{1}[0-9]{3}"/>
+ </xs:restriction>
+ </xs:simpleType>
+ <xs:simpleType name="PAT">
+ <xs:restriction base="xs:string">
+ <xs:pattern value="[0-9]{9}"/>
+ </xs:restriction>
+ </xs:simpleType>
+ <xs:simpleType name="TariffaINAIL">
+ <xs:restriction base="xs:string">
+ <xs:pattern value="[0-9]{4}"/>
+ </xs:restriction>
+ </xs:simpleType>
+ <xs:simpleType name="CodiceFiscaleSoggettoFisico">
+ <xs:restriction base="xs:string">
+ <xs:pattern value="[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]"/>
+ <xs:minLength value="16"/>
+ <xs:maxLength value="16"/>
+ </xs:restriction>
+ </xs:simpleType>
+ <xs:simpleType name="CodiceFiscaleNumerico">
+ <xs:restriction base="xs:string">
+ <xs:pattern value="[0-9]{11}"/>
+ <xs:minLength value="11"/>
+ <xs:maxLength value="11"/>
+ </xs:restriction>
+ </xs:simpleType>
+ <xs:simpleType name="CodiceFiscale">
+ <xs:union memberTypes="CodiceFiscaleSoggettoFisico CodiceFiscaleNumerico" />
+ </xs:simpleType>
+ <xs:element name="CreaComunicazione_Input" type="CreaComunicazione_Input"/>
+ <xs:complexType name="CreaComunicazione_Input">
+ <xs:sequence>
+ <xs:element name="SezioneDatoreLavoro" type="SezioneDatoreLavoro" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="SezioneLavoratore" type="SezioneLavoratore" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="SezioneRapportoLavoro" type="SezioneRapportoLavoro_Crea" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="SezioneAccordoSmartWorking" type="SezioneAccordoSmartWorking" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="SezioneSoggettoAbilitato" type="SezioneSoggettoAbilitato_Input" nillable="false" minOccurs="0" maxOccurs="1"/>
+ <xs:element name="CodTipologiaComunicazione" type="xs:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+ </xs:sequence>
+ </xs:complexType>
+ <xs:complexType name="SezioneDatoreLavoro">
+ <xs:sequence>
+ <xs:element name="CodiceFiscaleDatoreLavoro" type="CodiceFiscale" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="DenominazioneDatoreLavoro" type="xs:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+ </xs:sequence>
+ </xs:complexType>
+ <xs:complexType name="SezioneLavoratore">
+ <xs:sequence>
+ <xs:element name="CodiceFiscaleLavoratore" type="CodiceFiscale" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="NomeLavoratore" type="xs:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="CognomeLavoratore" type="xs:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="DataNascitaLavoratore" type="xs:dateTime" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="CodComuneNascitaLavoratore" type="CodiceComune" nillable="false" minOccurs="1" maxOccurs="1"/>
+ </xs:sequence>
+ </xs:complexType>
+ <xs:complexType name="SezioneRapportoLavoro_Crea">
+ <xs:sequence>
+ <xs:element name="DataInizioRapportoLavoro" type="xs:dateTime" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="CodTipologiaRapportoLavoro" type="xs:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="PosizioneINAIL" type="PAT" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="TariffaINAIL" type="TariffaINAIL" nillable="false" minOccurs="1" maxOccurs="1"/>
+ </xs:sequence>
+ </xs:complexType>
+ <xs:complexType name="SezioneSoggettoAbilitato_Input">
+ <xs:sequence>
+ <xs:element name="CodTipologiaSoggettoAbilitato" type="xs:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="CodiceFiscaleSoggettoAbilitato" type="CodiceFiscale" nillable="false" minOccurs="0" maxOccurs="1"/>
+ </xs:sequence>
+ </xs:complexType>
+ <xs:complexType name="SezioneAccordoSmartWorking">
+ <xs:sequence>
+ <xs:element name="DataSottoscrizioneAccordo" type="xs:dateTime" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="DataInizioPeriodo" type="xs:dateTime" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="DataFinePeriodo" type="xs:dateTime" nillable="false" minOccurs="0" maxOccurs="1"/>
+ <xs:element name="TipologiaDurataPeriodo" type="xs:string" nillable="false" minOccurs="1" maxOccurs="1"/> 
+ <xs:element name="StreamPDF" type="xs:base64Binary" nillable="false" minOccurs="1" maxOccurs="1" />
+</xs:sequence>
+ </xs:complexType>
+ <xs:element name="ModificaComunicazione_Input" type="ModificaComunicazione_Input"/>
+ <xs:complexType name="ModificaComunicazione_Input">
+ <xs:sequence>
+ <xs:element name="CodiceComunicazione" type="CodiceComunicazione" nillable="false" minOccurs="1" maxOccurs="1"/> 
+ <xs:element name="SezioneRapportoLavoro" type="SezioneRapportoLavoro_Modifica" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="SezioneAccordoSmartWorking" type="SezioneAccordoSmartWorking_Input" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="SezioneSoggettoAbilitato" type="SezioneSoggettoAbilitato_Input" nillable="false" minOccurs="0" maxOccurs="1"/>
+ <xs:element name="CodTipologiaComunicazione" type="xs:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+ </xs:sequence>
+ </xs:complexType>
+ <xs:complexType name="SezioneRapportoLavoro_Modifica">
+ <xs:sequence>
+ <xs:element name="CodTipologiaRapportoLavoro" type="xs:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="PosizioneINAIL" type="PAT" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="TariffaINAIL" type="TariffaINAIL" nillable="false" minOccurs="1" maxOccurs="1"/>
+ </xs:sequence>
+ </xs:complexType>
+ <xs:complexType name="SezioneAccordoSmartWorking_Input">
+ <xs:sequence>
+ <xs:element name="DataSottoscrizioneAccordo" type="xs:dateTime" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="DataInizioPeriodo" type="xs:dateTime" nillable="false" minOccurs="1" maxOccurs="1"/>
+ <xs:element name="DataFinePeriodo" type="xs:dateTime" nillable="false" minOccurs="0" maxOccurs="1"/> 
+ <xs:element name="TipologiaDurataPeriodo" type="xs:string" nillable="false" minOccurs="1" maxOccurs="1"/> 
+</xs:sequence>
+ </xs:complexType>
+ <xs:element name="AnnullaComunicazione_Input" type="AnnullaComunicazione_Input"/>
+ <xs:complexType name="AnnullaComunicazione_Input">
+ <xs:sequence>
+ <xs:element name="CodiceComunicazione" type="CodiceComunicazione" nillable="false" minOccurs="1" maxOccurs="1"/> 
+ <xs:element name="SezioneSoggettoAbilitato" type="SezioneSoggettoAbilitato_Input" nillable="false" minOccurs="0" maxOccurs="1"/>
+ <xs:element name="CodTipologiaComunicazione" type="xs:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+ </xs:sequence>
+ </xs:complexType>
+ </xs:schema>

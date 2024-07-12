@@ -1,0 +1,94 @@
+name: Build and deploy LavoroAgile
+
+env:
+  DOTNET_VERSION: '8.x'
+  BUILD_CONFIGURATION: 'Release'
+
+on:
+  push:
+    tags: 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Set up dependency caching for faster builds
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore packages
+        run: dotnet restore
+      
+      - name: Publish Lavoro Agile
+        run: dotnet publish -c ${{env.BUILD_CONFIGURATION}} -o ./lavoro-agile --self-contained true --runtime win-x64 ./src/PCM-LavoroAgile/PCM-LavoroAgile.csproj
+
+      - name: Create archive for Lavoro Agile
+        run: zip -r lavoro-agile.zip ./lavoro-agile
+      
+      - name: Publish Monitoring Dashboard
+        run: dotnet publish -c ${{env.BUILD_CONFIGURATION}} -o ./monitoring-dashboard --self-contained true --runtime win-x64 ./src/PCM-MonitoringDashboard/PCM-MonitoringDashboard.csproj
+
+      - name: Create archive for Monitoring Dashboard
+        run: zip -r monitoring-dashboard.zip ./monitoring-dashboard
+  
+      - name: Publish Workflow Definition
+        run: dotnet publish -c ${{env.BUILD_CONFIGURATION}} -o ./workflow-definition --self-contained true --runtime win-x64 ./src/PCM-WorkflowDefinition/PCM-WorkflowDefinition.csproj
+
+      - name: Create archive for Workflow Definition
+        run: zip -r workflow-definition.zip ./workflow-definition
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Lavoro Agile
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./lavoro-agile.zip
+          asset_name: lavoro-agile.zip
+          asset_content_type: application/zip
+
+      - name: Upload Monitoring Dashboard
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./monitoring-dashboard.zip
+          asset_name: monitoring-dashboard.zip
+          asset_content_type: application/zip
+
+      - name: Upload Workflow Definition
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./workflow-definition.zip
+          asset_name: workflow-definition.zip
+          asset_content_type: application/zip

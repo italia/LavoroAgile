@@ -1,0 +1,193 @@
+﻿@model AttivitaAccordoViewModel
+
+<tr>
+    <td width="5%" class="border-bottom-0">
+        <div style="float:left">
+            <div class="col" style="margin-top:20px">
+                <span class="attivitaIndex">@(Model.Index + 1).</span>
+            </div>
+        </div>
+    </td>
+    <td width="85%" class="border-bottom-0">
+        <!--Hidden-->
+        <input hidden name="ListaAttivita[@Model.Index].Index" asp-for="Index" />
+        <input hidden name="ListaAttivita[@Model.Index].TipologiaIndicatore" asp-for="TipologiaIndicatore" />    
+        <input hidden name="ListaAttivita[@Model.Index].DenominazioneIndicatore" asp-for="DenominazioneIndicatore" />   
+        
+        <input hidden name="ListaAttivita[@Model.Index].OperatoreLogicoIndicatoreTesto" asp-for="OperatoreLogicoIndicatoreTesto" />  
+        <input hidden name="ListaAttivita[@Model.Index].TestoTarget" asp-for="TestoTarget" />  
+        
+        <input hidden name="ListaAttivita[@Model.Index].OperatoreLogicoIndicatoreData" asp-for="OperatoreLogicoIndicatoreData" />  
+        <input hidden name="ListaAttivita[@Model.Index].DataTarget" asp-for="DataTarget" />  
+        <input hidden name="ListaAttivita[@Model.Index].DataDaTarget" asp-for="DataDaTarget" />  
+        <input hidden name="ListaAttivita[@Model.Index].DataATarget" asp-for="DataATarget" />  
+
+        <input hidden name="ListaAttivita[@Model.Index].OperatoreLogicoIndicatoreNumeroAssoluto" asp-for="OperatoreLogicoIndicatoreNumeroAssoluto" />  
+        <input hidden name="ListaAttivita[@Model.Index].NumeroAssolutoTarget" asp-for="NumeroAssolutoTarget" />  
+        <input hidden name="ListaAttivita[@Model.Index].NumeroAssolutoDaTarget" asp-for="NumeroAssolutoDaTarget" />  
+        <input hidden name="ListaAttivita[@Model.Index].NumeroAssolutoATarget" asp-for="NumeroAssolutoATarget" />  
+
+        <input hidden name="ListaAttivita[@Model.Index].OperatoreLogicoIndicatorePercentuale" asp-for="OperatoreLogicoIndicatorePercentuale" />  
+        <input hidden name="ListaAttivita[@Model.Index].PercentualeTarget" asp-for="PercentualeTarget" />  
+        <input hidden name="ListaAttivita[@Model.Index].PercentualeDaTarget" asp-for="PercentualeDaTarget" />  
+        <input hidden name="ListaAttivita[@Model.Index].PercentualeATarget" asp-for="PercentualeATarget" />  
+        <!--Hidden-->
+        @if(Model.Id != 0)
+        {
+            <div class="form-row">
+                <div class="col" style="margin-top:20px">
+                    <span class="font-weight-bold">@("ATT-"+@Model.Id)</span>
+                </div>
+            </div>
+        } 
+        <div class="form-row">
+            <div class="col">
+                <label>Attività Correnti</label>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col">
+                <textarea class="text-danger" name="ListaAttivita[@Model.Index].Attivita" asp-for="Attivita" readonly></textarea>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col">
+                <label>Risultati Attesi</label>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col">
+                <textarea class="text-primary" name="ListaAttivita[@Model.Index].Risultati" asp-for="Risultati" readonly></textarea>
+            </div>
+        </div>
+        @if (Model.TipologiaIndicatore == "Testo")
+        {           
+            <div class="form-row">
+                <div class="col">
+                    <label>Indicatori</label>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <textarea class="text-primary" name="ListaAttivita[@Model.Index].TestoTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreTesto @Model.TestoTarget</textarea>
+                </div>
+            </div>           
+        }
+        @if (Model.TipologiaIndicatore == "NumeroAssoluto")
+        {           
+            <div class="form-row">
+                <div class="col">
+                    <label>Indicatori</label>
+                </div>
+            </div>
+            @if (Model.OperatoreLogicoIndicatoreNumeroAssoluto != "compreso tra")
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="text-primary" name="ListaAttivita[@Model.Index].NumeroAssolutoTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreNumeroAssoluto @Model.NumeroAssolutoTarget</textarea>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="text-primary" name="ListaAttivita[@Model.Index].NumeroAssolutoTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreNumeroAssoluto @Model.NumeroAssolutoDaTarget e @Model.NumeroAssolutoATarget</textarea>
+                    </div>
+                </div>
+            }           
+        }
+        @if (Model.TipologiaIndicatore == "Percentuale")
+        {           
+            <div class="form-row">
+                <div class="col">
+                    <label>Indicatori</label>
+                </div>
+            </div>
+            @if (Model.OperatoreLogicoIndicatorePercentuale != "compreso tra")
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="text-primary" name="ListaAttivita[@Model.Index].PercentualeTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatorePercentuale @Model.PercentualeTarget% ( @Model.PercentualeIndicatoreDenominazioneNumeratore / @Model.PercentualeIndicatoreDenominazioneDenominatore)</textarea>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="text-primary" name="ListaAttivita[@Model.Index].PercentualeTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatorePercentuale @Model.PercentualeDaTarget% e @Model.PercentualeATarget% ( @Model.PercentualeIndicatoreDenominazioneNumeratore / @Model.PercentualeIndicatoreDenominazioneDenominatore)</textarea>
+                    </div>
+                </div>
+            }           
+        }
+        @if (Model.TipologiaIndicatore == "Data")
+        {
+            <div class="form-row">
+                <div class="col">
+                    <label>Indicatori</label>
+                </div>
+            </div>
+            @if (Model.OperatoreLogicoIndicatoreData != "compreso tra")
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="text-primary" name="ListaAttivita[@Model.Index].DataTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreData @Model.DataTarget.Value.ToShortDateString()</textarea>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="text-primary" name="ListaAttivita[@Model.Index].DataTarget" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreData il @Model.DataDaTarget.Value.ToShortDateString() ed il @Model.DataATarget.Value.ToShortDateString()</textarea>
+                    </div>
+                </div>
+            }
+        }
+        </td>
+    </tr>
+<tr>
+    <td colspan="2">
+        <div class="form-row">
+            <div class="col-2">
+                <span class="text-danger font-weight-bold">Target Raggiunto : </span>
+            </div>
+            @if (Model.TipologiaIndicatore == "Testo")
+            {
+                <div class="col-10">
+                    <textarea class="text-danger" name="ListaAttivita[@Model.Index].TestoTargetRaggiunto" asp-for="TestoTargetRaggiunto"></textarea>                    
+                </div>
+            }
+            @if (Model.TipologiaIndicatore == "NumeroAssoluto")
+            {
+                <div class="col-10">
+                    <input type="number" class="text-danger" name="ListaAttivita[@Model.Index].NumeroAssolutoRaggiunto" min="0" asp-for="NumeroAssolutoRaggiunto" />
+                </div>
+            }
+            @if (Model.TipologiaIndicatore == "Percentuale")
+            {
+                <div class="col-10">
+                    <div class="col-6">
+                        <span class="text-danger font-weight-bold">@Model.PercentualeIndicatoreDenominazioneNumeratore : </span>
+                    </div>
+                    <div class="col-6">
+                        <input type="number" class="text-danger" name="ListaAttivita[@Model.Index].PercentualeNumeratoreTargetRaggiunto" min="0" asp-for="PercentualeNumeratoreTargetRaggiunto" />
+                    </div>
+                    <div class="col-6">
+                        <span class="text-danger font-weight-bold">@Model.PercentualeIndicatoreDenominazioneDenominatore : </span>
+                    </div>
+                    <div class="col-6">
+                        <input type="number" class="text-danger" name="ListaAttivita[@Model.Index].PercentualeDenominatoreTargetRaggiunto" min="0" asp-for="PercentualeDenominatoreTargetRaggiunto" />
+                    </div>
+                </div>
+            }
+            @if (Model.TipologiaIndicatore == "Data")
+            {
+                <div class="col-10">
+                    <input type="date" class="text-danger" name="ListaAttivita[@Model.Index].DataTargetRaggiunto" asp-for="DataTargetRaggiunto" />
+                </div>
+            }
+        </div>
+    </td>
+</tr>

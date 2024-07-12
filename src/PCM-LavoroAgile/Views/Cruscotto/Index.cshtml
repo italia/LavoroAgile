@@ -1,0 +1,183 @@
+﻿@model CruscottoViewModel
+@{
+    ViewData["Title"] = "Cruscotto";
+}
+<h1 class="primary-color d-flex justify-content-center m-5"><strong>Cruscotto di Monitoraggio - PCM Lavoro Agile</strong></h1>
+<div class="row">
+    <div class="col px-lg-2">
+        <nav class="breadcrumb-container" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="Home">Home</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item active">
+                    <a href="#">Cruscotto di Monitoraggio</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <form>
+            <div class="form-row">
+                <div class="form-group col">
+                    <div class="bootstrap-select-wrapper">
+                        <label>Seleziona Struttura/Ufficio/Servizio</label>
+                        <select id="ddlstrutture" name="ddlstrutture" class="form-control" asp-items='new SelectList(Model.MenuStrutture, "Id", "StrutturaCompleta")' data-live-search="true"></select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+
+    <section class="col-lg-12 py-lg-5">
+        <div class="d-none d-lg-block d-xl-block">
+            <div class="row pb-3 px-4 border-bottom">
+                <div class="col-lg-12" id="_searchstatresult">
+
+                </div>
+            </div>
+        </div>
+        <p id="no-results" class="hide"><em>Nessun elemento individuato.</em></p>
+        <!-- Risultati ricerca. -->
+        <!-- Caricamento risultati -->
+        <div id="loading" class="progress progress-indeterminate">
+            <span class="sr-only">In caricamento...</span>
+            <div class="progress-bar" role="progressbar"></div>
+        </div>
+    </section>
+</div>
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js" integrity="sha512-b3xr4frvDIeyC3gqR1/iOi6T+m3pLlQyXNuvn5FiRrrKiMUJK3du2QqZbCywH6JxS5EOfW0DY0M6WwdXFbCBLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.0.0-rc.1/chartjs-plugin-datalabels.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            var noResultsEl = $('#no-results');
+            var loadingEl = $('#loading');
+            var totalResultsEl = $('.total-results');
+            noResultsEl.hide();
+            loadingEl.hide();
+            totalResultsEl.hide();
+            $("#ddlstrutture").prop("selectedIndex", 0).change();
+        });
+
+        //Alla selezione della struttura mi carico tutti i dati relativi agli accordi per quella struttura ed aggiorna la partialView delle statistiche
+        $("#ddlstrutture").change(function () {
+            var noResultsEl = $('#no-results');
+            var loadingEl = $('#loading');
+            var totalResultsEl = $('.total-results');
+            var searchstatresultpage = $('#_searchstatresult');
+            var role = getQueryParam('role');
+
+           $.ajax({
+                url: '@Url.Action("GetSearchStatPage", "Cruscotto")',
+               data: { id: $(this).val(), role: role },
+                cache: false,
+                type: "POST",
+                dataType: "html",
+                beforeSend: function (xhr, settings) {
+                    loadingEl.show();
+
+                },
+                success: function (data) {
+                    searchstatresultpage.empty();
+                    searchstatresultpage.html(data);
+                    var total = $('#total-search-elements');
+
+                    var ctx = $('#myChart')[0].getContext('2d');
+
+                    var myChart = new Chart(ctx, {
+                        type: 'pie',
+                        data : {
+                           
+                           datasets: [{
+                               label: 'Stato Richieste Lavoro Agile',
+                               data: [
+                                   bolla.acc_sottoscritti,
+                                   bolla.acc_AttesaResponsabileAccordo,
+                                   bolla.acc_AttesaCapoIntermedio,
+                                   bolla.acc_AttesaCapoStruttura,
+                                   bolla.acc_AttesaSottoscrizione,
+                                   bolla.acc_NoValidateResponsabileAccordo,
+                                   bolla.acc_NonValidateCapoIntermedio,
+                                   bolla.acc_NoValidateCapoStruttura,
+                                   bolla.acc_AttesaRichiestaIntegrazione],
+                               backgroundColor: [
+                                   'rgb(39, 117, 0)',
+                                   'rgb(234, 200, 1)',
+                                   'rgb(234, 170, 1)',
+                                   'rgb(234, 140, 1)',
+                                   'rgb(79, 234, 1)',
+                                   'rgb(190, 0, 0)',
+                                   'rgb(220, 50, 50)',
+                                   'rgb(240, 100, 100)',
+                                   'rgb(1, 66, 234)',
+
+                               ],
+                               hoverOffset: 4
+                           }]
+                       },
+                       options: {
+                           layout: {
+                               padding: {
+                                   bottom: 25
+                               }
+                           },
+                           plugins: {
+                               tooltip: {
+                                   enabled: true,
+                                   callbacks: {
+                                       footer: (ttItem) => {
+                                           let sum = 0;
+                                           let dataArr = ttItem[0].dataset.data;
+                                           dataArr.map(data => {
+                                               sum += Number(data);
+                                           });
+
+                                           let percentage = (ttItem[0].parsed * 100 / sum).toFixed(0) + '%';
+                                           return `${percentage}`;
+                                       }
+                                   }
+                               },
+                               /** Imported from a question linked above.
+                                   Apparently Works for ChartJS V2 **/
+                               datalabels: {
+                                   formatter: (value, dnct1) => {
+                                       let sum = 0;
+                                       let dataArr = dnct1.chart.data.datasets[0].data;
+                                       dataArr.map(data => {
+                                           sum += Number(data);
+                                       });
+
+                                       if (value == 0) return '';
+                                       else {
+                                           let percentage = (value * 100 / sum).toFixed(0) + '%';
+                                           return percentage;
+                                       }
+                                   },
+                                   color: '#fff',
+                               }
+                           }
+                       },
+                       plugins: [ChartDataLabels]
+                   });
+
+
+               },
+               error: function (xhr, status, error) {
+
+               },
+               complete: function (xhr, status) {
+                   loadingEl.hide();
+               }
+    });
+        });
+
+    </script>
+}

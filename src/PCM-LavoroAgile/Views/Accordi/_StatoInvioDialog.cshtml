@@ -1,0 +1,30 @@
+﻿@model TransmissionStatusViewModel
+<div class="modal" tabindex="-1" role="dialog" id="transmission-status-modal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Stato invio informazioni a sistemi esterni</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Chiudi">
+                    <svg class="icon">
+                        <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-close"></use>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <partial name="_StatoInvioPartial" model="Model" />
+            </div>
+            <div class="modal-footer">
+                <!-- Se ci sono errori, consente di reinviare le attività / le giornate -->
+                @if (!Model.WorkingActivitiesSentSuccessfully)
+                {
+                    <button id="resend-activities-button" class="btn btn-success btn-sm" type="button" data-dismiss="modal" data-accordo-id="@Model.AccordoId">Reinvia attività</button>
+                }
+                @if (!Model.WorkingDaysSentSuccessfully)
+                {
+                    <button id="resend-days-button" class="btn btn-success btn-sm" type="button" data-dismiss="modal" data-accordo-id="@Model.AccordoId">Reinvia giornate</button>
+                }
+                <button class="btn btn-primary btn-sm" type="button" data-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>

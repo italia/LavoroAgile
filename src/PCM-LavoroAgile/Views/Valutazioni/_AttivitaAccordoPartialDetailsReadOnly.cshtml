@@ -1,0 +1,171 @@
+﻿@model AttivitaAccordoViewModel
+
+<tr>
+    <td width="5%" class="border-bottom-0">
+        <div style="float:left">
+            <div class="col" style="margin-top:20px">
+                <span class="attivitaIndex">@(Model.Index + 1).</span>
+            </div>
+        </div>
+    </td>
+    <td width="85%" class="border-bottom-0">
+        @if(Model.Id != 0)
+        {
+            <div class="form-row">
+                <div class="col" style="margin-top:20px">
+                    <span class="font-weight-bold">@("ATT-"+@Model.Id)</span>
+                </div>
+            </div>
+        } 
+
+        <div class="form-row">
+            <div class="col">
+                <label>Attività</label>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col">
+                <textarea class="text-danger" readonly>@Model.Attivita</textarea>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col">
+                <label>Risultati Attesi</label>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col">
+                <textarea class="text-primary" readonly>@Model.Risultati</textarea>
+            </div>
+        </div>
+        @if (Model.TipologiaIndicatore == "Testo")
+        {           
+            <div class="form-row">
+                <div class="col">
+                    <label>Indicatori</label>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="col">
+                    <textarea class="text-primary" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreTesto @Model.TestoTarget</textarea>
+                </div>
+            </div>           
+        }
+        @if (Model.TipologiaIndicatore == "NumeroAssoluto")
+        {           
+            <div class="form-row">
+                <div class="col">
+                    <label>Indicatori</label>
+                </div>
+            </div>
+            @if (Model.OperatoreLogicoIndicatoreNumeroAssoluto != "compreso tra")
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="text-primary" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreNumeroAssoluto @Model.NumeroAssolutoTarget</textarea>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="text-primary" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreNumeroAssoluto @Model.NumeroAssolutoDaTarget e @Model.NumeroAssolutoATarget</textarea>
+                    </div>
+                </div>
+            }           
+        }
+        @if (Model.TipologiaIndicatore == "Percentuale")
+        {           
+            <div class="form-row">
+                <div class="col">
+                    <label>Indicatori</label>
+                </div>
+            </div>
+            @if (Model.OperatoreLogicoIndicatorePercentuale != "compreso tra")
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="text-primary" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatorePercentuale @Model.PercentualeTarget% ( @Model.PercentualeIndicatoreDenominazioneNumeratore / @Model.PercentualeIndicatoreDenominazioneDenominatore)</textarea>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="text-primary" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatorePercentuale @Model.PercentualeDaTarget% e @Model.PercentualeATarget% ( @Model.PercentualeIndicatoreDenominazioneNumeratore / @Model.PercentualeIndicatoreDenominazioneDenominatore)</textarea>
+                    </div>
+                </div>
+            }           
+        }
+        @if (Model.TipologiaIndicatore == "Data")
+        {
+            <div class="form-row">
+                <div class="col">
+                    <label>Indicatori</label>
+                </div>
+            </div>
+            @if (Model.OperatoreLogicoIndicatoreData != "compreso tra")
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="text-primary" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreData @Model.DataTarget.Value.ToShortDateString()</textarea>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="form-row">
+                    <div class="col">
+                        <textarea class="text-primary" readonly>@Model.DenominazioneIndicatore @Model.OperatoreLogicoIndicatoreData il @Model.DataDaTarget.Value.ToShortDateString() ed il @Model.DataATarget.Value.ToShortDateString()</textarea>
+                    </div>
+                </div>
+            }
+        }
+        </td>
+    </tr>
+<tr>
+    <td colspan="2" >
+        <div class="form-row">
+            <div class="col-2">
+                <span class="text-danger font-weight-bold">Target Raggiunto : </span>
+            </div>
+            @if (Model.TipologiaIndicatore == "Testo")
+            {
+                <div class="col-10">
+                    <textarea class="text-danger" readonly>@Model.TestoTargetRaggiunto</textarea>
+                </div>
+            }
+            @if (Model.TipologiaIndicatore == "NumeroAssoluto")
+            {
+                <div class="col-10">
+                    <input type="number" class="text-danger" readonly value="@Model.NumeroAssolutoRaggiunto"/>
+                </div>
+            }
+            @if (Model.TipologiaIndicatore == "Percentuale")
+            {
+                <div class="col-10">
+                    <div class="col-6">
+                        <span class="text-danger font-weight-bold">@Model.PercentualeIndicatoreDenominazioneNumeratore : </span>
+                    </div>
+                    <div class="col-6">
+                        <input type="number" class="text-danger" readonly value="@Model.PercentualeNumeratoreTargetRaggiunto"/>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-danger font-weight-bold">@Model.PercentualeIndicatoreDenominazioneDenominatore : </span>
+                    </div>
+                    <div class="col-6">
+                        <input type="number" class="text-danger" readonly value="@Model.PercentualeDenominatoreTargetRaggiunto"/>
+                    </div>
+                </div>
+            }
+            @if (Model.TipologiaIndicatore == "Data")
+            {
+                <div class="col-10">
+                    <input class="text-danger" disabled value="@(Model.DataTargetRaggiunto.HasValue ? Model.DataTargetRaggiunto.Value.ToString("dd/MM/yyyy") : String.Empty)"/>
+                </div>
+            }
+        </div>
+    </td>
+</tr>

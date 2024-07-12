@@ -1,0 +1,64 @@
+﻿@model LoginViewModel
+@inject IOptions<LdapSettings> LdapSettings
+
+@{
+    ViewData["Title"] = "Login";
+}
+<div class="row border-bottom">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1 class="primary-color">@ViewData["Title"]</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mt-4">
+        <section>
+            <form asp-action="Login">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label asp-for="Input.Email"></label>
+                        <input asp-for="Input.Email" class="form-control" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label asp-for="Input.Password"></label>
+                        <input asp-for="Input.Password" class="form-control" type="password" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-check">
+                        <input asp-for="Input.RememberMe" />
+                        <label asp-for="Input.RememberMe">
+                            @Html.DisplayNameFor(m => m.Input.RememberMe)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col">
+                        <button type="submit" name="Input.LoginAD" value="false" class="btn btn-primary" onclick="return DisplaySpinner();">Log in</button>
+                        @if (!string.IsNullOrWhiteSpace(LdapSettings.Value.Uri))
+                        {
+                            <button type="submit" name="Input.LoginAD" value="true" class="btn btn-primary">Login su dominio</button>
+                        }
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    @*<partial name="_ValidationScriptsPartial" />*@
+}

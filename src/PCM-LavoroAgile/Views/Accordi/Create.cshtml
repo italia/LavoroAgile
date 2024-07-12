@@ -1,0 +1,727 @@
+﻿@using PCM_LavoroAgile.Extensions;
+@model AccordoViewModel
+@{
+    ViewData["Title"] = "Nuovo accordo";
+    var strutture = (IEnumerable<StrutturaViewModel>)ViewData["strutture"];
+}
+<div class="row">
+    <div class="col px-lg-2">
+        <nav class="breadcrumb-container" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/Home">Home</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item active">
+                    <a href="#">Nuovo accordo</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row border-bottom mb-5">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1 class="primary-color">@ViewData["Title"]</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Create" id="form" asp-route-role="@Context.Request.Query["role"]">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!--Hidden-->
+    @Html.HiddenFor(a => a.Id)
+    @Html.HiddenFor(a => a.Dipendente.Id)
+    @Html.HiddenFor(a => a.StrutturaUfficioServizio)
+    @Html.HiddenFor(a => a.Livello1)
+    @Html.HiddenFor(a => a.Livello2)
+    @Html.HiddenFor(a => a.Livello3)
+    @Html.HiddenFor(a => a.NumLivelliStruttura)
+    @Html.HiddenFor(a => a.DirigenteResponsabile.Email)
+    @Html.HiddenFor(a => a.DirigenteResponsabile.NomeCognome)
+    @Html.HiddenFor(a => a.InitializedFromExtenalService)
+    @Html.HiddenFor(a => a.RevisioneAccordo)
+    <!--Hidden-->
+
+    <h4 class="primary-color">Anagrafica</h4>
+    <br />
+    <div style="border:thin gray solid" class="p-5">
+        <fieldset id="anag-1-fieldset" class="@(Model.InitializedFromExtenalService ? "disable-form" : "")">
+            <div class="form-row">
+                <div class="form-group col">
+                    <input type="text" class="form-control" id="NomeCognome" asp-for="Dipendente.NomeCognome" autocomplete="off">
+                    <label for="NomeCognome">Nome Cognome <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","NomeCognome"}})" /></label>
+                    <span asp-validation-for="Dipendente.NomeCognome" class="text-danger"></span>
+                </div>
+                <div class="it-datepicker-wrapper">
+                    <div class="form-group col">
+                        <input class="form-control it-date-datepicker" id="DataDiNascita" placeholder="gg/mm/aaaa" type="text" asp-for="Dipendente.DataDiNascita" autocomplete="off">
+                        <label for="DataDiNascita">Data di nascita <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DataDiNascita"}})" /></label>
+                        <span asp-validation-for="Dipendente.DataDiNascita" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group col" hidden>
+                    <input type="text" class="form-control" id="sesso" asp-for="Dipendente.Sesso" autocomplete="off">
+                    <label for="sesso">Sesso</label>
+                    <span asp-validation-for="Dipendente.Sesso" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col">
+                    <input type="text" class="form-control" id="LuogoDiNascita" asp-for="Dipendente.LuogoDiNascita" autocomplete="off">
+                    <label for="LuogoDiNascita">Luogo di nascita <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","LuogoDiNascita"}})" /></label>
+                    <span asp-validation-for="Dipendente.LuogoDiNascita" class="text-danger"></span>
+                </div>
+                <div class="form-group col">
+                    <input type="text" class="form-control" id="CodiceFiscale" asp-for="Dipendente.CodiceFiscale" maxlength="16" autocomplete="off">
+                    <label for="CodiceFiscale">Codice Fiscale <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","CodiceFiscale"}})" /></label>
+                    <span asp-validation-for="Dipendente.CodiceFiscale" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col">
+                    <input type="text" class="form-control" id="Email" asp-for="Dipendente.Email" value="@Model.Dipendente.Email" autocomplete="off">
+                    <label for="Email">Email <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","EmailDipendente"}})" /></label>
+                    <span asp-validation-for="Dipendente.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group col">
+                    <input type="tel" class="form-control enable-field" id="Telefono" asp-for="Telefono" autocomplete="none">
+                    <label for="Telefono">Telefono <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Telefono"}})" /></label>
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
+                <div class="it-datepicker-wrapper">
+                    <div class="form-group col">
+                        <input class="form-control it-date-datepicker enable-field" id="DataPresaServizio" placeholder="gg/mm/aaaa" type="text" asp-for="DataPresaServizio" autocomplete="off">
+                        <label for="DataPresaServizio">Data presa servizio <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DataPresaServizio"}})" /></label>
+                        <span asp-validation-for="DataPresaServizio" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <!--Al momento si è concordato che i campi Posizione giuridica e Fascia retributiva vengono recuperati dall'ERP e non inseriti dall'utente-->
+            <div class="form-row" hidden>
+                <div class="form-group col">
+                    <div class="bootstrap-select-wrapper">
+                        <select asp-for="Dipendente.PosizioneGiuridica" class="form-control">
+                            <option value="" disabled selected>Selezionare una posizione giuridica</option>
+                            <option value="Ruolo">Ruolo</option>
+                            <option value="Comando/Fuori ruolo">Comando/Fuori ruolo</option>
+                            <option value="Estraneo alla PA">Estraneo alla PA</option>
+                        </select>
+                        <label for="PosizioneGiuridica">Posizione giuridica</label>
+                        <span asp-validation-for="Dipendente.PosizioneGiuridica" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group col">
+                    <div class="bootstrap-select-wrapper">
+                        <select asp-for="Dipendente.CategoriaFasciaRetributiva" class="form-control">
+                            <option value="" disabled selected>Selezionare una Categoria/Fascia retributiva</option>
+                            <option value="Dirigente di prima fascia">Dirigente di prima fascia</option>
+                            <option value="Dirigente di seconda fascia">Dirigente di seconda fascia</option>
+                            <option value="A F9">A F9</option>
+                            <option value="A F8">A F8</option>
+                            <option value="A F7">A F7</option>
+                            <option value="A F6">A F6</option>
+                            <option value="A F5">A F5</option>
+                            <option value="A F4">A F4</option>
+                            <option value="A F3">A F3</option>
+                            <option value="A F2">A F2</option>
+                            <option value="A F1">A F1</option>
+                            <option value="B F9">B F9</option>
+                            <option value="B F8">B F8</option>
+                            <option value="B F7">B F7</option>
+                            <option value="B F6">B F6</option>
+                            <option value="B F5">B F5</option>
+                            <option value="B F4">B F4</option>
+                            <option value="B F3">B F3</option>
+                            <option value="B F2">B F2</option>
+                            <option value="B F1">B F1</option>
+                        </select>
+                        <label for="CategoriaFasciaRetributiva">Categoria / Fascia retributiva</label>
+                        <span asp-validation-for="Dipendente.PosizioneGiuridica" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-row">
+            <!-- Se l'accordo è stato preinizializzato dalla fonte esterna, nasconde la combo e mostra quanto ricevuto -->
+            <div id="select-struttura-div" class="form-group col" hidden="@Model.InitializedFromExtenalService">
+                <div class="bootstrap-select-wrapper">
+                    <select id="ddlStrutture" asp-for="UidStrutturaUfficioServizio" class="form-control" asp-items='new SelectList(strutture, "Id", "StrutturaCompleta")' data-live-search="true">
+                        <option value="" disabled selected>Selezionare una struttura</option>
+                    </select>
+                    <label for="UidStrutturaUfficioServizio" class="control-label">Ricerca del responsabile dell’accordo per Struttura/Ufficio/Servizio</label>
+                    <span asp-validation-for="UidStrutturaUfficioServizio" class="text-danger"></span>
+                </div>
+            </div>
+            <div id="descr-struttura-div" class="form-group col" hidden="@(!Model.InitializedFromExtenalService)">
+                <input type="text" id="strutturaUfficioServizio" class="form-control" asp-for="StrutturaUfficioServizio" readonly>
+                <label for="strutturaUfficioServizio">Struttura/Ufficio/Servizio <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","StrutturaUfficioServizio"}})" /></label>
+            </div>
+        </div>
+        @*<fieldset id="anag-2-fieldset" class="@(Model.InitializedFromExtenalService ? "disable-form" : "")">*@
+        <fieldset id="anag-2-fieldset">
+            <div class="form-row">
+                <div class="form-group col">
+                    <input type="text" class="form-control" id="ResponsabileAccordo" asp-for="ResponsabileAccordo.NomeCognome" placeholder="Responsabile dell'accordo" autocomplete="off">
+                    <label>Responsabile dell'accordo <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","ResponsabileAccordo"}})" /></label>
+                    <span asp-validation-for="ResponsabileAccordo.NomeCognome" class="text-danger"></span>
+                </div>
+                <div class="form-group col" id="divCapoIntermedio">
+                    <input type="text" class="form-control" id="CapoIntermedio" asp-for="CapoIntermedio.NomeCognome" placeholder="Coordinatore dell'Ufficio o altro superiore" autocomplete="off">
+                    <label>Coordinatore dell'Ufficio o altro superiore gerarchico <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","CoordinatoreUfficio"}})" /></label>
+                    <span asp-validation-for="CapoIntermedio.NomeCognome" class="text-danger"></span>
+                </div>
+                <div class="form-group col">
+                    <input type="text" class="form-control" id="CapoStruttura" asp-for="CapoStruttura.NomeCognome" placeholder="Responsabile apicale della struttura" autocomplete="off">
+                    <label>Responsabile apicale della struttura <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","CapoStruttura"}})" /></label>
+                    <span asp-validation-for="CapoStruttura.NomeCognome" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col">
+                    <input type="text" class="form-control" id="ResponsabileAccordoEmail" asp-for="ResponsabileAccordo.Email" placeholder="Email" autocomplete="off">
+                    <label>Email <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","EmailResponsabileAccordo"}})" /></label>
+                    <span asp-validation-for="ResponsabileAccordo.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group col" id="divEmailCapoIntermedio">
+                    <input type="text" class="form-control" id="CapoIntermedioEmail" asp-for="CapoIntermedio.Email" placeholder="Email" autocomplete="off">
+                    <label>Email <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","EmailCoordinatoreUfficio"}})" /></label>
+                    <span asp-validation-for="CapoIntermedio.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group col">
+                    <input type="text" class="form-control" id="CapoStrutturaEmail" asp-for="CapoStruttura.Email" placeholder="Email" autocomplete="off">
+                    <label>Email <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","EmailCapoStruttura"}})" /></label>
+                    <span asp-validation-for="CapoStruttura.Email" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col">
+                    <input type="text" class="form-control" id="ReferenteInterno" asp-for="ReferenteInterno.NomeCognome" placeholder="Referente Interno" autocomplete="off" readonly>
+                    @*<label for="ReferenteInterno">ReferenteInterno</label>*@
+                    <label>Referente interno <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","ReferenteInterno"}})" /></label>
+                    <span asp-validation-for="ReferenteInterno.NomeCognome" class="text-danger"></span>
+                </div>
+                <div class="form-group col">
+                    <input type="text" class="form-control" id="ReferenteInternoEmail" asp-for="ReferenteInterno.Email" placeholder="Email Referente Interno" autocomplete="off" readonly>
+                    @*<label for="UidReferenteInterno">EmailReferenteInterno</label>*@
+                    <label>Email referente interno <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","EmailReferenteInterno"}})" /></label>
+                    <span asp-validation-for="ReferenteInterno.Email" class="text-danger"></span>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <br />
+    <h4 class="primary-color">Dichiarazioni aggiuntive <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DichiarazioniAggiuntive"}})" /></h4>
+    <br />
+
+    <div style="border:thin gray solid" class="p-5">
+        <div class="form-row">
+            <div class="form-group col">
+                <div class="form-check">
+                    <input type="checkbox" class="form-control" id="Priorita_1" asp-for="Priorita_1">
+                    <label for="Priorita_1" class="text-wrap" style="height:100%">
+                        Dichiara di essere genitore nei tre anni successivi alla conclusione del periodo
+                        di congedo di maternità previsto dall’articolo 16 del decreto legislativo 26 marzo 2001, n. 151
+                    </label>
+                    <span asp-validation-for="Priorita_1" class="text-danger"></span>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-control" id="Priorita_2" asp-for="Priorita_2">
+                    <label for="Priorita_2" class="text-wrap" style="height:100%">
+                        Dichiara di essere genitore con figli in condizioni di disabilità ai sensi dell’articolo 3,
+                        comma 3, della legge 5 febbraio 1992, n. 104.
+                    </label>
+                    <span asp-validation-for="Priorita_2" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+    <h4 class="primary-color">Caratteristiche dell'accordo</h4>
+    <br />
+
+    <div style="border:thin gray solid" class="p-5">
+        <div class="form-row">
+            <div class="form-group col">
+                <div class="form-check">
+                    <input type="checkbox" class="form-control" id="PrimoAccordo" asp-for="PrimoAccordo" readonly>
+                    <label for="PrimoAccordo">Primo accordo <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","PrimoAccordo"}})" /></label>
+                    <span asp-validation-for="PrimoAccordo" class="text-danger"></span>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-control" id="DerogaPianificazioneDate" asp-for="DerogaPianificazioneDate" readonly onchange="initAlertDeroga();">
+                    <label for="DerogaPianificazioneDate">Deroga autorizzata (art. 6, co. 3 della Direttiva 2 maggio 2019) <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Deroga"}})" /></label>
+                    <span asp-validation-for="DerogaPianificazioneDate" class="text-danger"></span>
+                    <p id="alertDeroga" style="font-style:oblique; display:none;">
+                        L'accordo in deroga è soggetto alla supervisione della Segreteria Tecnica per il lavoro agile, ad esito dell'iter autorizzatorio:<br />
+                        - in caso di conformità, l'accordo verrà trasmesso al responsabile<br />
+                        - in caso di non conformità, l'accordo verrà riportato in BOZZA e le motivazioni saranno riportate nelle note condivise in fondo all'accordo
+                    </p>
+                </div>
+            </div>
+            <!--Si è concorodato che nella fase iniziale non si tiene conto di queste informazioni-->
+            <div class="it-datepicker-wrapper" id="divDataFineAccordoPrecedente" hidden>
+                <div class="form-group col">
+                    <input class="form-control it-date-datepicker" id="DataFineAccordoPrecedente" placeholder="gg/mm/aaaa" type="text" asp-for="DataFineAccordoPrecedente" autocomplete="off">
+                    <label for="DataFineAccordoPrecedente">Data fine accordo precedente</label>
+                    <span asp-validation-for="DataFineAccordoPrecedente" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group col" id="divValutazioneEsitiAccordoPrecedente" hidden>
+                <input type="text" class="form-control" id="ValutazioneEsitiAccordoPrecedente" asp-for="ValutazioneEsitiAccordoPrecedente">
+                <label for="ValutazioneEsitiAccordoPrecedente">Valutazione esiti accordo precedente</label>
+                <span asp-validation-for="ValutazioneEsitiAccordoPrecedente" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="it-datepicker-wrapper">
+                <div class="form-group col">
+                    <input class="form-control it-date-datepicker" id="DataInizioUtc" placeholder="gg/mm/aaaa" type="text" asp-for="DataInizioUtc" autocomplete="off" onkeydown="return false">
+                    <label for="DataInizioUtc">Data inizio <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DataInizio"}})" /></label>
+                    <span asp-validation-for="DataInizioUtc" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="it-datepicker-wrapper">
+                <div class="form-group col">
+                    <input class="form-control it-date-datepicker" id="DataFineUtc" placeholder="gg/mm/aaaa" type="text" asp-for="DataFineUtc" autocomplete="off" onkeydown="return false">
+                    <label for="DataFineUtc">Data fine <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DataFine"}})" /></label>
+                    <span asp-validation-for="DataFineUtc" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group col">
+                <div class="bootstrap-select-wrapper">
+                    <select id="ModalitaPianificazione" asp-for="Modalita" class="form-control">
+                        <option value="" disabled selected>Selezionare una modalità</option>
+                        <option value="OrdinariaUnGiorno">Un giorno a settimana</option>
+                        <option value="OrdinariaDueGiorni">Due giorni a settimana</option>
+                        <option value="Eccezionale">Giornate prescelte</option>
+                    </select>
+                    <label for="Modalita">Modalità di svolgimento del lavoro agile <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","ModalitaPianificazione"}})" /></label>
+                    <span asp-validation-for="Modalita" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group col" id="divPianificazioneGiorniAccordo">
+                <div class="bootstrap-select-wrapper">
+                    <select id="PianificazioneGiorniAccordo" asp-for="PianificazioneGiorniAccordo" class="form-control" multiple>
+                        <option value="Lunedì">Lunedì</option>
+                        <option value="Martedì">Martedì</option>
+                        <option value="Mercoledì">Mercoledì</option>
+                        <option value="Giovedì">Giovedì</option>
+                        <option value="Venerdì">Venerdì</option>
+                    </select>
+                    <label for="PianificazioneGiorniAccordo">Pianificazione giorni accordo <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","PianificazioneGiorni"}})" /></label>
+                    <span asp-validation-for="PianificazioneGiorniAccordo" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row" id="divPianificazioneDateAccordo">
+            <div class="form-group col">
+                <input id="PianificazioneDateAccordo" type="text" asp-for="PianificazioneDateAccordo" readonly>
+                <label for="PianificazioneDateAccordo">Pianificazione date accordo <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","PianificazioneDate"}})" /></label>
+                <span asp-validation-for="PianificazioneDateAccordo" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col">
+                <div class="bootstrap-select-wrapper">
+                    <select id="FasceDiContattabilita" asp-for="FasceDiContattabilita" class="form-control" multiple>
+                        <option value="7.00 - 8.00">7.00 - 8.00</option>
+                        <option value="8.00 - 9.00">8.00 - 9.00</option>
+                        <option value="9.00 - 10.00">9.00 - 10.00</option>
+                        <option value="10.00 - 11.00">10.00 - 11.00</option>
+                        <option value="11.00 - 12.00">11.00 - 12.00</option>
+                        <option value="12.00 - 13.00">12.00 - 13.00</option>
+                        <option value="13.00 - 14.00">13.00 - 14.00</option>
+                        <option value="14.00 - 15.00">14.00 - 15.00</option>
+                        <option value="15.00 - 16.00">15.00 - 16.00</option>
+                        <option value="16.00 - 17.00">16.00 - 17.00</option>
+                        <option value="17.00 - 18.00">17.00 - 18.00</option>
+                        <option value="18.00 - 19.00">18.00 - 19.00</option>
+                        <option value="19.00 - 20.00">19.00 - 20.00</option>
+                    </select>
+                    <label for="FasceDiContattabilita">Fasce di contattabilità <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","FasceContattabilita"}})" /></label>
+                    <span asp-validation-for="FasceDiContattabilita" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group col">
+                @*<div class="bootstrap-select-wrapper">
+                        <input type="text" class="form-control" list="select-list-id" asp-for="StrumentazioneUtilizzata" />
+                        <datalist id="select-list-id" class="form-control">
+                            <option value="Di proprietà"></option>
+                            <option value="Della PCM"></option>
+                        </datalist>
+                        <label for="StrumentazioneUtilizzata">Strumentazione utilizzata</label>
+                        <span asp-validation-for="StrumentazioneUtilizzata" class="text-danger"></span>
+                    </div>*@
+                <div class="bootstrap-select-wrapper">
+                    <select id="StrumentazioneUtilizzata" asp-for="StrumentazioneUtilizzata" class="form-control">
+                        <option value="Di proprietà">Di proprietà</option>
+                        <option value="Della PCM">Della PCM</option>
+                    </select>
+                    <label for="StrumentazioneUtilizzata">Strumentazione utilizzata <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Strumentazione"}})" /></label>
+                    <span asp-validation-for="StrumentazioneUtilizzata" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+    <h4 class="primary-color">Organizzazione del lavoro</h4>
+    <br />
+
+    <div style="border:thin gray solid" class="p-5">
+        <div class="table-responsive">
+            <table id="tableAttivita" class="table">
+                <tbody>
+                    <tr>
+                        <td width="5%"></td>
+                        <td width="85%">
+                            <div class="form-row mt-3">
+                                <div class="form-group col">
+                                    <textarea class="form-control border" rows="3" id="Attivita" placeholder="Descrivere attività oggetto dell’accordo"></textarea>
+                                    <label for="Attivita">Attività <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Attivita"}})" /></label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <textarea class="form-control border" rows="3" id="Risultati" placeholder="Descrivere i risultati attesi dell'attività"></textarea>
+                                    <label for="Risultati">Descrizione risultati attesi <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","RisultatiAttesi"}})" /></label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <input class="form-control" type="text" id="DenominazioneIndicatore" placeholder="Descrizione denominazione indicatore" />
+                                    <label for="DenominazioneIndicatore">Indicatore <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Indicatore"}})" /></label>
+                                </div>
+                                <div class="form-group col">
+                                    <div class="bootstrap-select-wrapper">
+                                        <select id="TipologiaIndicatore" class="form-control">
+                                            <option value="Testo">Testo</option>
+                                            <option value="NumeroAssoluto">Numero assoluto</option>
+                                            <option value="Percentuale">Percentuale</option>
+                                            <option value="Data">Data</option>
+                                        </select>
+                                        <label for="TipologiaIndicatore">Unità di misura <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","UnitaDiMisura"}})" /></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Indicatore Testo-->
+                            <div id="DivIndicatoreTesto">
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <div class="bootstrap-select-wrapper">
+                                            <select id="OperatoreLogicoIndicatoreTesto" class="form-control">
+                                                <option value="uguale a">uguale a</option>
+                                                <option value="diverso da">diverso da</option>
+                                            </select>
+                                            <label for="OperatoreLogicoIndicatoreTesto">Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Target"}})" /></label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col">
+                                        <input class="form-control" type="text" id="TestoTarget" placeholder="Descrizione target" />
+                                        <label for="TestoTarget">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Fine Indicatore Testo-->
+                            <!--Indicatore Numero Assoluto-->
+                            <div id="DivIndicatoreNumeroAssoluto">
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <div class="bootstrap-select-wrapper">
+                                            <select id="OperatoreLogicoIndicatoreNumeroAssoluto" class="form-control">
+                                                <option value="uguale a">uguale a</option>
+                                                <option value="diverso da">diverso da</option>
+                                                <option value="maggiore di">maggiore di</option>
+                                                <option value="maggiore uguale a">maggiore uguale a</option>
+                                                <option value="minore di">minore di</option>
+                                                <option value="minore uguale a">minore uguale a</option>
+                                                <option value="compreso tra">compreso tra</option>
+                                            </select>
+                                            <label for="OperatoreLogicoIndicatoreNumeroAssoluto">Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Target"}})" /></label>
+                                        </div>
+                                    </div>
+                                    <div id="DivNumeroAssolutoTarget">
+                                        <div class="form-group col">
+                                            <input class="form-control" type="number" id="NumeroAssolutoTarget" placeholder="Target numerico" />
+                                            <label for="NumeroAssolutoTarget">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                                        </div>
+                                    </div>
+                                    <div id="DivNumeroAssolutoDaTarget">
+                                        <div class="form-group col">
+                                            <input class="form-control" type="number" id="NumeroAssolutoDaTarget" placeholder="Target 'da' numerico" />
+                                            <label for="NumeroAssolutoDaTarget">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                                        </div>
+                                    </div>
+                                    <div id="DivNumeroAssolutoATarget">
+                                        <div class="form-group col">
+                                            <input class="form-control" type="number" id="NumeroAssolutoATarget" placeholder="Target 'a' numerico" />
+                                            <label for="NumeroAssolutoATarget">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Fine Indicatore Numero Assoluto-->
+                            <!--Indicatore Percentuale-->
+                            <div id="DivIndicatorePercentuale">
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <input class="form-control" type="text" id="PercentualeIndicatoreDenominazioneNumeratore" placeholder="Denominazione numeratore" />
+                                        <label for="PercentualeIndicatoreDenominazioneNumeratore">Numeratore <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","NumeratorePercentuale"}})" /></label>
+                                    </div>
+                                    <div class="form-group col">
+                                        <input class="form-control" type="text" id="PercentualeIndicatoreDenominazioneDenominatore" placeholder="Denominazione denominatore" />
+                                        <label for="PercentualeIndicatoreDenominazioneDenominatore">Denominatore <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DenominatorePercentuale"}})" /></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <div class="bootstrap-select-wrapper">
+                                            <select id="OperatoreLogicoIndicatorePercentuale" class="form-control">
+                                                <option value="uguale a">uguale a</option>
+                                                <option value="diverso da">diverso da</option>
+                                                <option value="maggiore di">maggiore di</option>
+                                                <option value="maggiore uguale a">maggiore uguale a</option>
+                                                <option value="minore di">minore di</option>
+                                                <option value="minore uguale a">minore uguale a</option>
+                                                <option value="compreso tra">compreso tra</option>
+                                            </select>
+                                            <label for="OperatoreLogicoIndicatorePercentuale">Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Target"}})" /></label>
+                                        </div>
+                                    </div>
+                                    <div id="DivPercentualeTarget">
+                                        <div class="form-group col">
+                                            <input class="form-control" type="number" id="PercentualeTarget" placeholder="Target numerico" />
+                                            <label for="PercentualeTarget">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                                        </div>
+                                    </div>
+                                    <div id="DivPercentualeDaTarget">
+                                        <div class="form-group col">
+                                            <input class="form-control" type="number" id="PercentualeDaTarget" placeholder="Target 'da' numerico" />
+                                            <label for="PercentualeDaTarget">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                                        </div>
+                                    </div>
+                                    <div id="DivPercentualeATarget">
+                                        <div class="form-group col">
+                                            <input class="form-control" type="number" id="PercentualeATarget" placeholder="Target 'a' numerico" />
+                                            <label for="PercentualeATarget">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Fine Indicatore Percentuale-->
+                            <!--Indicatore Data-->
+                            <div id="DivIndicatoreData">
+                                <div class="form-row">
+                                    <div class="form-group col">
+                                        <div class="bootstrap-select-wrapper">
+                                            <select id="OperatoreLogicoIndicatoreData" class="form-control">
+                                                <option value="uguale a">uguale a</option>
+                                                @*<option value="diverso da">diverso da</option>
+                                                    <option value="maggiore di">maggiore di</option>
+                                                    <option value="maggiore uguale a">maggiore uguale a</option>
+                                                    <option value="minore di">minore di</option>*@
+                                                <option value="minore uguale a">minore uguale a</option>
+                                                <option value="compreso tra">compreso tra</option>
+                                            </select>
+                                            <label for="OperatoreLogicoIndicatoreData">Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Target"}})" /></label>
+                                        </div>
+                                    </div>
+                                    <div id="DivDataTarget">
+                                        <div class="form-group col">
+                                            <input class="form-control it-date-datepicker" id="DataTarget" placeholder="gg/mm/aaaa" type="text" autocomplete="off">
+                                            <label for="DataTarget">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                                        </div>
+                                    </div>
+                                    <div id="DivDataDaTarget">
+                                        <div class="form-group col">
+                                            <input class="form-control it-date-datepicker" id="DataDaTarget" placeholder="gg/mm/aaaa" type="text" autocomplete="off">
+                                            <label for="DataDaTarget">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                                        </div>
+                                    </div>
+                                    <div id="DivDataATarget">
+                                        <div class="form-group col">
+                                            <input class="form-control it-date-datepicker" id="DataATarget" placeholder="gg/mm/aaaa" type="text" autocomplete="off">
+                                            <label for="DataATarget">Descrizione Target <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","DescrizioneTarget"}})" /></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--Fine Indicatore Data-->
+                            <span asp-validation-for="ListaAttivita" id="validationListaAttivita" class="text-danger"></span>
+                        </td>
+                        <td width="10%" class="align-bottom">
+                            <input type="button" class="btn btn-primary" style="width:150px" id="addAttivita" value="Inserisci" />
+                        </td>
+                    </tr>
+                    @foreach (AttivitaAccordoViewModel attivitaAccordoViewModel in Model.ListaAttivita)
+                    {
+                        <partial name="_AttivitaAccordoPartial" model="attivitaAccordoViewModel" />
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <br />
+    <h4 class="primary-color">Giustificato motivo di recesso <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","GiustificatoMotivoDiRecesso"}})" /></h4>
+    <br />
+    <div style="border:thin gray solid" class="p-5">
+        <div class="form-row">
+            <div class="form-group col mb-0">
+                <ul class="it-list">
+                    <li>
+                        <div class="it-right-zone">
+                            <span class="text" style="line-height:50px">Mancato raggiungimento degli obiettivi programmati</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="it-right-zone">
+                            <span class="text" style="line-height:50px">Sopravvenienza di nuove esigenze organizzative</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="it-right-zone">
+                            <span class="text" style="line-height:50px">Cambio struttura</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="it-right-zone">
+                            <span class="text" style="line-height:50px">Cambio responsabile accordo</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="it-right-zone">
+                            <textarea class="form-control border" rows="3" id="GiustificatoMotivoDiRecesso" asp-for="GiustificatoMotivoDiRecesso" placeholder="Aggiungere un eventuali ulteriori giustificati motivi di recesso" aria-label="Giustificato motivo di recesso"></textarea>
+                            @*<label for="GiustificatoMotivoDiRecesso">Giustificato motivo di recesso</label>*@
+                            <span asp-validation-for="GiustificatoMotivoDiRecesso" class="text-danger"></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <br />
+    <h4 class="primary-color">Informative <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Informative"}})" /></h4>
+    <br />
+
+    <div style="border:thin gray solid" class="p-5">
+        <div class="form-row">
+            <div class="form-group col">
+                <div class="form-check">
+                    <input type="checkbox" class="form-control" id="SaluteESicurezza" asp-for="SaluteESicurezza" readonly>
+                    <label for="SaluteESicurezza">Salute e sicurezza</label>
+                </div>
+                <span asp-validation-for="SaluteESicurezza" class="text-danger"></span>
+                <div style="text-align: justify">
+                    Presa visione dell'informativa sui rischi generali e specifici in materia di salute e sicurezza per il lavoratore che svolge
+                    la prestazione in modalità agile, se ne accetta integralmente il contenuto.
+                    <br /><a href="/Documents/Allegato B - Informativa salute e sicurezza.pdf" target="_blank">Informativa salute e sicurezza.pdf</a><br />
+                </div>                
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col">
+                <div class="form-check">
+                    <input type="checkbox" class="form-control" id="AccessoVPN" asp-for="AccessoVPN" readonly>
+                    <label for="AccessoVPN">Accesso VPN</label>
+                </div>
+                <span asp-validation-for="AccessoVPN" class="text-danger"></span>
+                <div style="text-align: justify">
+                    Presa visione dell'informativa con le condizioni per l'accesso VPN alla rete PCM, se ne accetta integralmente il contenuto.
+                    <br /><a href="/Documents/Allegato A - Informativa accesso VPN-PCM.pdf" target="_blank">Informativa accesso VPN-PCM.pdf</a><br />
+                </div>                
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col">
+                <div class="form-check">
+                    <input type="checkbox" class="form-control" id="PrivacyEConsensoTrattamentoDati" asp-for="PrivacyEConsensoTrattamentoDati" readonly>
+                    <label for="PrivacyEConsensoTrattamentoDati">Privacy e consenso trattamento dati</label>
+                </div>
+                <span asp-validation-for="PrivacyEConsensoTrattamentoDati" class="text-danger"></span>
+                <div style="text-align: justify">
+                    Letta l’informativa sul trattamento dei dati personali, si autorizza il trattamento degli stessi ai sensi del decreto
+                    legislativo 30 giugno 2003, n. 196, come modificato dal decreto legislativo 10 agosto 2018, n. 101 e del Regolamento UE 2016/679,
+                    per le finalità connesse alla gestione dell’accordo di lavoro agile.
+                    <br /><a href="/Documents/Allegato C - Informativa privacy.pdf" target="_blank">Informativa privacy.pdf</a><br />
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <br />
+    <h4 class="primary-color">Formazione <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Formazione"}})" /></h4>
+    <br />
+
+    <div style="border:thin gray solid" class="p-5">
+        <div class="form-row">
+            <div class="form-group col">
+                <div class="form-check">
+                    <input type="checkbox" class="form-control" id="FormazioneLavoroAgile" asp-for="FormazioneLavoroAgile" readonly>
+                    <label for="FormazioneLavoroAgile">Formazione lavoro agile</label>                    
+                </div>
+                <span asp-validation-for="FormazioneLavoroAgile" class="text-danger"></span>
+                <div style="text-align: justify">
+                    Il sottoscritto dichiara, sotto la propria responsabilità, di aver frequentato moduli formativi specifici in materia di lavoro agile,
+                    anche con riferimento ai profili di sicurezza informatica e di salute e sicurezza sul lavoro.
+                    <br />
+                    Per chi non ha mai stipulato un accordo/progetto di lavoro agile e non ha mai frequentato un corso propedeutico, di seguito i link alle video lezioni.
+                    <br /><br />
+                    Inquadramento generale, illustrazione del quadro normativo di riferimento; Il lavoro agile come leva di innovazione manageriale e organizzativa.
+                    Le fasi del progetto di change management: ruoli e responsabilità per il cambiamento; Presentazione buone pratiche;
+                    <br /><a href="https://snapcm.adobeconnect.com/p17aolr2d78l/" target="_blank">Video Lezione</a>
+                    <br /><br />
+                    Focus sui profili connessi alla salute e sicurezza
+                    <br /><a href="https://snapcm.adobeconnect.com/pishtm68kmuu/" target="_blank">Video Lezione</a>
+                    <br /><br />
+                    Gli strumenti organizzativi per l’attuazione del lavoro agile all’interno delle amministrazioni pubbliche; Il monitoraggio dell’attuazione del lavoro agile nelle amministrazioni pubbliche.
+                    <br /><a href="https://snapcm.adobeconnect.com/poqb6wgq8o7q/" target="_blank">Video Lezione</a>
+                </div>                
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row mt-5">
+        <div class="form-group col">
+            <div class="form-check">
+                <input type="text" class="form-control" id="Stato" readonly value="@EnumExtensions.ToDescriptionString(Model.Stato)">
+                <label for="Stato">Stato <partial name="../Shared/_HelpPartial.cshtml" view-data="@(new ViewDataDictionary(ViewData){{"anchor","Stato"}})" /></label>
+                <span asp-validation-for="Stato" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col">
+            <button type="submit" class="btn btn-primary buttonWidth" onclick="return DisplaySpinner();">Salva</button>
+            @*<a href="/Servizio" class="btn btn-primary buttonWidth" role="button">Indietro</a>*@
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary buttonWidth" role="button">Indietro</a>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/js/Accordo.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function () {
+            InitializeAccordo('@Url.Action("GetStrutturaSelected", "Accordi")', '@Url.Action("AddAttivita", "Accordi")', '@User.GetUserEmail()');
+        });        
+    </script>
+}

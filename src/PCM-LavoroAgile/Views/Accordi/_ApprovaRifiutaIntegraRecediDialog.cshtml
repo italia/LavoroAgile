@@ -1,0 +1,128 @@
+﻿@model AccordoViewModel
+<div class="modal" tabindex="-1" role="dialog" id="approva-rifiuta-integra-modal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title-div">Approva - Rifiuta - Richiedi integrazioni - Recedi</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Chiudi">
+                    <svg class="icon">
+                        <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-close"></use>
+                    </svg>
+                </button>
+            </div>
+            
+            <!--Approva/Rifiuta/Integra-->
+            <div id="div-approva-rifiuta-integra-modal">
+                <form asp-action="ApprovaRifiutaIntegra" asp-controller="Approvals" id="approval-form" asp-route-role="@Context.Request.Query["role"]">
+                    @Html.HiddenFor(a => a.Id)
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="active">Note</label>
+                            <textarea id="note" name="Note" rows="3" placeholder="Digita qui eventuali note"></textarea>
+                        </div>                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" name="action" value="@("Approvato" + Model.Stato.ToString()[^2..] )" class="btn btn-sm btn-success buttonWidth" id="approva-dialog-input">Approva e Sottoscrivi</button>
+                        <button type="submit" name="action" value="@("Rifiutato" + Model.Stato.ToString()[^2..] )" class="btn btn-sm btn-danger buttonWidth" id="rifiuta-dialog-input">Rifiuta</button>
+                        <button type="submit" name="action" value="RichiestaModifiche" class="btn btn-sm btn-info buttonWidth" id="integra-dialog-input">Richiedi modifica</button>
+                        <button class="btn btn-primary btn-sm" type="button" data-dismiss="modal">Chiudi</button>
+                    </div>
+                </form>
+            </div>
+
+            <!--Recesso-->
+            <div id="div-recesso-modal">
+                <div class="nav-tabs-wrapper ml-2">
+                    <ul class="nav nav-tabs nav-tabs-cards nav-tabs-editable" id="card-simple-btn" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="card-simple-btn1-tab" data-toggle="tab" href="#card-simple-btntab1" role="tab" aria-controls="card-simple-btntab1" aria-selected="true">Recesso pianificato</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="card-simple-btn2-tab" data-toggle="tab" href="#card-simple-btntab2" role="tab" aria-controls="card-simple-btntab2" aria-selected="false">Recesso per giustificato motivo</a>
+                        </li>                  
+                    </ul>
+                </div>
+                <div class="tab-content" id="card-simple-btnContent">
+                    <!--Recesso pianificato-->
+                    <div class="tab-pane p-4 fade show active" id="card-simple-btntab1" role="tabpanel" aria-labelledby="card-simple-btn1-tab">
+                        <form asp-action="Recedi" asp-controller="Approvals" id="approval-form" asp-route-role="@Context.Request.Query["role"]">
+                            @Html.HiddenFor(a => a.Id)
+                            <div class="modal-body">
+                                <div class="it-datepicker-wrapper" id="data-recesso-div">
+                                    <div class="form-group">
+                                        <input class="form-control it-date-datepicker" name="DataRecesso" id="data-recesso-input" type="text" placeholder="Specifica la data di recesso">
+                                        <label for="data-recesso-input">Data recesso</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="active">Note</label>
+                                    <textarea id="note" name="Note" rows="3" placeholder="Digita qui eventuali note"></textarea>
+                                </div>                                
+                                <div class="modal-footer">
+                                    @if (Model.InCorso && (Model.Stato == StatoAccordo.Sottoscritto || Model.Stato == StatoAccordo.RecessoPianificato) &&
+                                        (Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_UTENTE.ToDescriptionString()) || Context.Request.Query["role"].Equals(RoleAndKeysClaimEnum.KEY_CLAIM_RESPONSABILE_ACCORDO.ToDescriptionString())))
+                                    {
+                                        string popOverTitle = "", popOverContent = "", pointerType = "all";
+                                        bool disabled = false;
+
+                                        <!-- Se non è possibile recedere perché la prima data utile supera la data di fine accordo, inizializza il popover che indica la situazione -->
+                                        if (DateTime.UtcNow.Date.AddDays(30) > Model.DataFineUtc)
+                                        {
+                                            popOverTitle = "Impossibile recedere";
+                                            popOverContent = "Non è possibile recedere perché la prima data utile, supera la data prevista di fine accordo.";
+                                            disabled = true;
+                                            pointerType = "none";
+
+                                        }
+                                        <span class="d-inline-block" tabindex="0" data-toggle="popover" data-trigger="hover" data-placement="top" data-html="true" title="@popOverTitle" data-content="@popOverContent">
+                                            <button type="submit" name="action" value="Recedi" class="btn btn-sm btn-danger buttonWidth" id="recedi-dialog-input" style="pointer-events: @pointerType;" disabled="@disabled">Recedi</button>
+                                        </span>
+                                    }
+                                    <button class="btn btn-primary btn-sm" type="button" data-dismiss="modal">Chiudi</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!--Recesso giustificato motivo-->
+                    <div class="tab-pane p-4 fade" id="card-simple-btntab2" role="tabpanel" aria-labelledby="card-simple-btn2-tab">
+                        <form asp-action="RecediGiustificatoMotivo" asp-controller="Approvals" id="approval-form" asp-route-role="@Context.Request.Query["role"]">
+                            @Html.HiddenFor(a => a.Id)
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <div class="bootstrap-select-wrapper">
+                                        <select id="recesso-giustificato-motivo-select" name="GiustificatoMotivo" class="form-control">
+                                            <option value="Mancato raggiungimento degli obiettivi programmati" selected>Mancato raggiungimento degli obiettivi programmati</option>
+                                            <option value="Sopravvenienza di nuove esigenze organizzative">Sopravvenienza di nuove esigenze organizzative</option>
+                                            <option value="Cambio struttura">Cambio struttura</option>
+                                            <option value="Cambio responsabile accordo">Cambio responsabile accordo</option>
+                                            @if (!String.IsNullOrEmpty(Model.GiustificatoMotivoDiRecesso))
+                                            {
+                                                <option value="Personalizzato">@Model.GiustificatoMotivoDiRecesso</option>
+                                            }
+                                        </select>
+                                        <label for="recesso-giustificato-motivo-select">Gustificato motivo di recesso</label>
+                                    </div>
+                                </div>   
+                                <div class="it-datepicker-wrapper">
+                                    <div class="form-group">
+                                        <input class="form-control it-date-datepicker" name="DataRecessoGiustificatoMotivo" id="data-recesso-giustificato-motivo" type="text" placeholder="Specifica la data di recesso" readonly autocomplete="off" style="pointer-events:none;">
+                                        <label for="data-recesso-giustificato-motivo">Data recesso</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="active">Note</label>
+                                    <textarea id="note" name="Note" rows="3" placeholder="Digita qui eventuali note"></textarea>
+                                </div>                                
+                            </div>                                
+                            <div class="modal-footer">
+                                <button type="submit" name="action" value="RecediGiustificatoMotivo" class="btn btn-sm btn-danger buttonWidth" id="recedi-giustificato-motivo-dialog-input">Recedi</button>                        
+                                <button class="btn btn-primary btn-sm" type="button" data-dismiss="modal">Chiudi</button>
+                            </div>                            
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

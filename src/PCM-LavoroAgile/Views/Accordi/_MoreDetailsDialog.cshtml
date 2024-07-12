@@ -1,0 +1,58 @@
+﻿@model AccordoViewModel
+<div class="modal" tabindex="-1" role="dialog" id="moreDetails-modal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title-div">Ulteriori dettagli</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Chiudi">
+                    <svg class="icon">
+                        <use xlink:href="/lib/bootstrap-italia/dist/svg/sprite.svg#it-close"></use>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="divModalBodyPianificazioneDate" class="form-group">
+                    <label class="active">Pianificazione date</label>
+                    <textarea id="pianificazioneDate" name="pianificazioneDate" placeholder=" " rows="5" style="overflow-y:auto">@Model.PianificazioneDateAccordo</textarea>
+                </div>
+                <div id="divModalBodyFasceContattabilita" class="form-group">
+                    <label class="active">Fasce di contattabilità</label>
+                    @{string fasceContattabilita = string.Join(",", Model.FasceDiContattabilita);}
+                    <textarea id="fasceContattabilita" name="fasceContattabilita" placeholder=" " rows="5" style="overflow-y:auto">@fasceContattabilita</textarea>
+                </div>
+                <div id="divModalBodyValutazione" class="form-group">
+                    <p><label class="active">Valutazione</label></p>
+                    <div class="table-responsive">
+                        <table id="tableValutazione" class="table">
+                            <tbody>
+                                @foreach (AttivitaAccordoViewModel attivitaAccordoViewModel in Model.ListaAttivita)
+                                {
+                                    <partial name="../Valutazioni/_AttivitaAccordoPartialDetailsReadOnly" model="attivitaAccordoViewModel" />                                    
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="form-row active" style="margin-top:50px">
+                        <div class="col">
+                            <textarea id="NotaDipendente" class="text-primary" readonly>@(String.IsNullOrEmpty(Model.NotaDipendente) ? "Nessuna nota" : Model.NotaDipendente)</textarea>
+                            <label for="NotaDipendente" class="active">Note del Dipendente - @(Model.DataNotaDipendente.HasValue ? Model.DataNotaDipendente.Value.ToString("dd/MM/yyyy") : "[n/a]")</label>
+                        </div>
+                    </div>
+                        
+                    <div class="form-row" style="margin-top:50px">
+                        <div class="col">                            
+                            <textarea id="NotaDirigente" class="text-primary" readonly>@(String.IsNullOrEmpty(Model.NotaDirigente) ? "Nessuna nota" : Model.NotaDirigente)</textarea>                   
+                            <label for="NotaDirigente" class="active">Note del Dirigente - @(Model.DataNotaDirigente.HasValue ? Model.DataNotaDirigente.Value.ToString("dd/MM/yyyy") : "[n/a]")</label>
+                        </div>
+                    </div>
+
+                    <a class="btn btn-primary btn-sm" target="_blank" href="@Url.Action("GeneratePdfValutazione", "Accordi", new { id = Model.Id })">Download valutazione</a>
+                </div>
+            </div>
+            <div class="modal-footer">                
+                <button class="btn btn-primary btn-sm" type="button" data-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+﻿@model Microsoft.AspNetCore.Identity.IdentityRole<Guid>
+
+@{
+    ViewData["Title"] = "Nuovo Ruolo";
+}
+
+<div class="row">
+    <div class="col px-lg-2">
+        <nav class="breadcrumb-container" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/Home">Home</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item active">
+                    <a href="#">Utenti / Ruoli - Nuovo Ruolo</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row border-bottom">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1 class="primary-color">@ViewData["Title"]</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mt-4">
+        <form asp-action="CreateRole">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-row">
+                <div class="form-group col">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@*<div>
+        <a asp-action="Index">Back to List</a>
+    </div>*@
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

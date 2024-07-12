@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Domain.Model.Identity;
+
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="it-access-top-wrapper pr-3 d-none d-lg-block">
+        @*<a id="manage" class="btn btn-primary btn-sm" href="/AccountManager/Index" title="Manage">Benvenuto @User.FindFirst(System.Security.Claims.ClaimTypes.GivenName).Value!</a>*@
+        <a id="manage" class="navbar-brand" href="/">Benvenuto @User.FindFirst(System.Security.Claims.ClaimTypes.GivenName).Value!</a>
+        @Html.ActionLink("Cambia password", "ChangePassword", "Account", null, new { @class = "navbar-brand" })
+        <a id="manage" class="navbar-brand" href="~/Documents/ManualeLavoroAgile.html" target="_blank">Manuale</a>
+    </div>
+    <div class="it-access-top-wrapper">
+        @*<button id="logout" class="btn btn-primary btn-sm">@Html.ActionLink("Esci", "Logout", "Account", null, null)</button>*@
+        @Html.ActionLink("Logout", "Logout", "Account", null, new { @class = "navbar-brand" }) 
+    </div>    
+}
+else
+{
+    <div class="it-access-top-wrapper d-none d-lg-block">
+        @*<a class="btn btn-primary btn-sm" id="login" href="/Account/Login">Accedi</a>*@
+        <a class="navbar-brand" id="login" href="/Account/Login">Login</a>
+    </div>
+}

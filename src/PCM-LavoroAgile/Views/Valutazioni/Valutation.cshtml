@@ -1,0 +1,172 @@
+﻿@model AccordoViewModel
+@{
+    ViewData["Title"] = "Valutazione Accordo";
+    var strutture = (IEnumerable<StrutturaViewModel>)ViewData["strutture"];
+}
+<div class="row">
+    <div class="col px-lg-2">
+        <nav class="breadcrumb-container" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="/Home">Home</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item">
+                    <a href="/valutazioni?role=@Context.Request.Query["role"]">Valuta Accordi</a><span class="separator">/</span>
+                </li>
+                <li class="breadcrumb-item active">
+                    <a href="#">Valutazione accordo</a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row border-bottom mb-5">
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h1 class="primary-color">@ViewData["Title"]</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-action="Save" id="form" asp-route-role="@Context.Request.Query["role"]">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!--Hidden-->
+    <div class="form-row">
+        <div class="form-group col" hidden>
+            <input type="text" class="form-control" id="id" readonly asp-for="Id">
+            <label for="id"></label>
+        </div>
+        <div class="form-group col" hidden>
+            <input type="text" class="form-control" id="CreationDate" readonly asp-for="CreationDate">
+            <label for="CreationDate"></label>
+        </div>
+        <div class="form-group col" hidden>
+            <input type="text" class="form-control" id="EditTime" readonly asp-for="EditTime">
+            <label for="EditTime"></label>
+        </div>
+        <div class="form-group col" hidden>
+            <div class="bootstrap-select-wrapper">
+                <input type="text" class="form-control" id="StrutturaUfficioServizio" asp-for="StrutturaUfficioServizio">
+                <label for="StrutturaUfficioServizio" class="control-label"></label>
+            </div>
+        </div>
+        <div class="form-group col" hidden>
+            <div class="bootstrap-select-wrapper">
+                <input type="text" class="form-control" id="NumLivelliStruttura" asp-for="NumLivelliStruttura">
+                <label for="NumLivelliStruttura" class="control-label"></label>
+            </div>
+        </div>
+        <div class="form-group col" hidden>
+            <div class="bootstrap-select-wrapper">
+                <input type="text" class="form-control" id="DirigenteResponsabile" asp-for="DirigenteResponsabile">
+                <label for="DirigenteResponsabile" class="control-label"></label>
+            </div>
+        </div>
+        <div class="form-group col" hidden>
+            <div class="bootstrap-select-wrapper">
+                <input type="text" class="form-control" id="DirigenteResponsabileEmail" asp-for="DirigenteResponsabile">
+                <label for="DirigenteResponsabileEmail" class="control-label"></label>
+            </div>
+        </div>
+    </div>
+    <!--Hidden-->
+
+    <div>
+        <div class="form-row">
+            <div class="form-group col">
+                <input type="text" class="form-control" id="NomeCognome" asp-for="Dipendente.NomeCognome" disabled>
+                <label for="NomeCognome">Nome Cognome</label>
+            </div>
+
+            <div class="form-group col">
+                <div class="bootstrap-select-wrapper">
+                    <input type="text" class="form-control" id="Periodo" disabled value="@Model.DataInizioUtc.Value.Date.ToShortDateString() - @Model.DataFineUtc.Value.Date.ToShortDateString()">
+                    <label for="UidStrutturaUfficioServizio" class="control-label">Periodo</label>
+                </div>
+            </div>
+
+            <div class="form-group col">
+                <input type="text" class="form-control" id="ResponsabileAccordo" asp-for="ResponsabileAccordo" placeholder="Responsabile Accordo" readonly>
+                <label>Responsabile accordo</label>
+                <span asp-validation-for="ResponsabileAccordo" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    
+    <br />
+    <h4 class="primary-color">Attività da Accordo</h4>
+    <div style="border:thin gray solid" class="p-1">
+        <div class="table-responsive">
+            <table id="tableAttivita" class="table">
+                <tbody>
+                    @foreach (AttivitaAccordoViewModel attivitaAccordoViewModel in Model.ListaAttivita)
+                    {
+                        <partial name="_AttivitaAccordoValutationPartial" model="attivitaAccordoViewModel" />
+
+                    }
+                </tbody>
+
+            </table>
+            <div>
+                <div class="col">
+                    <label>Note del Dipendente</label>
+                </div>
+            </div>
+            <div>
+                <div class="col">
+                    <textarea class="text-primary" name="NotaDipendente" asp-for="NotaDipendente" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="form-row pt-5">
+            <div class="form-group col-12">
+                <h5>Sulla base delle informazioni e dei dati raccolti durante i monitoraggi periodici e nella scheda di misurazione finale dei risultati conseguiti in relazione alle attività realizzate nelle giornate di lavoro agile, è espressa, anche ai fini di un successivo rinnovo dell’accordo.</h5>
+            </div>
+            <div class="form-group col-12" style="text-align:left">
+                <div class="form-check">
+                    <input type="checkbox" class="form-control" id="checkValutazionePositiva" asp-for="checkValutazionePositiva" />
+                    <label for="checkValutazionePositiva">Valutazione positiva</label>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-control" id="checkValutazioneNegativa" asp-for="checkValutazioneNegativa" />
+                    <label for="checkValutazioneNegativa">Valutazione negativa</label>
+                </div>
+            </div>
+            <div class="form-group col-12">
+                <label>Note del Dirigente Responsabile</label>
+            </div>
+            <div class="form-group col-12">
+                <textarea class="text-danger" name="NotaDirigente" asp-for="NotaDirigente"></textarea>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="form-row">
+        <div class="form-group col">
+            <a href="javascript:void(0);" class="btn btn-primary buttonWidth" role="button" onclick="history.go(-1); return false;">Indietro</a>
+        </div>
+        <div class="form-group col">
+            <button type="submit" class="btn btn-warning buttonWidth float-right" onclick="return DisplaySpinner();">Conferma Valutazione Accordo</button>
+        </div>
+    </div>
+
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#checkValutazionePositiva, #checkValutazioneNegativa').change(function () {
+                $('#checkValutazionePositiva').prop('checked', false);
+                $('#checkValutazioneNegativa').prop('checked', false);
+                $('#'+this.id).prop('checked', true);                             
+            }); 
+        });
+    </script>
+
+}
